@@ -78,18 +78,6 @@ scorekeeper/
     └── change_pin.php      # Change user PIN
 ```
 
-## Deployment
-
-A GitHub Actions workflow in `.github/workflows/deploy.yml` rsyncs the project to a remote server on every push to `main`. `db.local.php` and `config.local.php` are excluded from deployment and must be created on the server (the installer handles this).
-
-Required GitHub repository secrets:
-
-- `DEPLOY_HOST` — SSH host
-- `DEPLOY_USER` — SSH user
-- `DEPLOY_SSH_KEY` — private SSH key
-- `DEPLOY_PORT` — SSH port
-- `DEPLOY_PATH` — remote directory to deploy into
-
 ## License
 
 [MIT](LICENSE)

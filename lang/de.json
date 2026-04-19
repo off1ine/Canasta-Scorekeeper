@@ -1,1 +1,19 @@
-{}
+{
+  "Primary": "Hauptmenü",
+  "Overview": "Übersicht",
+  "Stats": "Statistiken",
+  "Setup": "Einrichtung",
+  "Account": "Konto",
+
+  "Sign in": "Anmelden",
+  "Welcome back": "Willkommen zurück",
+  "Sign in to continue scoring.": "Melde dich an, um weiter Punkte zu zählen.",
+  "Create admin account": "Administratorkonto erstellen",
+  "Create admin": "Administrator erstellen",
+  "Set up the first admin for your scorekeeper.": "Richte den ersten Administrator für deinen Scorekeeper ein.",
+  "Username": "Benutzername",
+  "4-digit PIN": "4-stellige PIN",
+  "Enter a username and a 4-digit PIN.": "Benutzername und 4-stellige PIN eingeben.",
+  "Invalid username or PIN.": "Ungültiger Benutzername oder PIN.",
+  "PINs are stored hashed. Use HTTPS so logins are protected.": "PINs werden gehasht gespeichert. Verwende HTTPS, damit Anmeldungen geschützt sind."
+}

@@ -95,7 +95,7 @@ let elEditCard, elEditGameTitle, elEditWinner, elEditScoresInputs, elEditStatus,
 let current = { sessionId: null, roundId: null, data: null };
 let editState = { gameId: null };
 
-function renderScoreboard(d, ended, roundWinner) {
+function renderScoreboard(d, ended, roundWinner, roundLoser) {
     elScoreboard.innerHTML = "";
 
     const leaders = computeLeaders(d);
@@ -112,6 +112,7 @@ function renderScoreboard(d, ended, roundWinner) {
         const chips = [];
         if (isLeader) chips.push(`<span class="chip chip-indigo">${esc(t('Leader'))}</span>`);
         if (roundWinner === pid) chips.push(`<span class="chip chip-amber">${esc(t('Round winner'))}</span>`);
+        if (roundLoser === pid) chips.push(`<span class="chip chip-red">${esc(t('Round loser'))}</span>`);
 
         const isRomme = d.session?.game_type === 'romme';
         const meldChipCls = isRomme ? 'chip chip-green' : meldChipClass(meldMin, d.meld_thresholds);
@@ -247,6 +248,23 @@ function render() {
     const r = d.round;
     const ended = r.ended_at !== null;
     const roundWinner = r.winner_player_id ? Number(r.winner_player_id) : null;
+    const isRomme = d.session?.game_type === 'romme';
+
+    // For Rommé, identify the player who tipped the round over the ceiling
+    // (the unique max-total player at round end).
+    let roundLoser = null;
+    let roundLoserName = null;
+    if (isRomme && ended) {
+        const totals = d.players.map(p => ({ pid: Number(p.id), name: p.name, total: d.totals[Number(p.id)] ?? 0 }));
+        if (totals.length) {
+            const maxT = Math.max(...totals.map(x => x.total));
+            const candidates = totals.filter(x => x.total === maxT);
+            if (candidates.length === 1) {
+                roundLoser = candidates[0].pid;
+                roundLoserName = candidates[0].name;
+            }
+        }
+    }
 
     const gameCount = d.games.length;
     const target = fmtNum(r.target_score);
@@ -257,11 +275,18 @@ function render() {
         { target, count: gameCount }
     );
 
-    const endedLabel = ended
-        ? (r.winner_name
+    let endedLabel;
+    if (!ended) {
+        endedLabel = t('Active');
+    } else if (isRomme) {
+        endedLabel = roundLoserName
+            ? t('Ended · Loser: {name}', { name: roundLoserName })
+            : t('Ended (tied)');
+    } else {
+        endedLabel = r.winner_name
             ? t('Ended · Winner: {name}', { name: r.winner_name })
-            : t('Ended (no winner)'))
-        : t('Active');
+            : t('Ended (no winner)');
+    }
     elRoundTitle.textContent = t('Round {n} · {status}', { n: r.round_number, status: endedLabel });
 
     elSummaryTitle.textContent = t('{session} · Round {n}', { session: d.session.name, n: r.round_number });
@@ -276,7 +301,7 @@ function render() {
     const suggestedDealer = suggestNextDealer(d);
     renderPillGroup(elDealer, d.players, suggestedDealer);
 
-    renderScoreboard(d, ended, roundWinner);
+    renderScoreboard(d, ended, roundWinner, roundLoser);
     renderAddGameInputs(d, ended);
     renderGamesList(d, r);
 }

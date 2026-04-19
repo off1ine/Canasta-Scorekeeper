@@ -14,6 +14,7 @@ $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $sessionId = (int)($input['session_id'] ?? 0);
 $name = trim((string)($input['name'] ?? ''));
 $newMax = (int)($input['max_score_per_round'] ?? 0);
+$meldMinInput = array_key_exists('meld_minimum', $input) ? $input['meld_minimum'] : null;
 
 // propagation mode: "none" | "active" | "all"
 $prop = (string)($input['propagate'] ?? 'none');
@@ -23,11 +24,30 @@ if ($name === '') json_out(['error' => t('Session name required.')], 400);
 if ($newMax <= 0) json_out(['error' => t('Max score must be > 0.')], 400);
 if (!in_array($prop, ['none','active','all'], true)) json_out(['error' => t('Invalid propagate mode.')], 400);
 
+// Fetch current session to enforce game_type immutability and scope meld_minimum edits.
+$cur = $pdo->prepare("SELECT game_type FROM sessions WHERE id=?");
+$cur->execute([$sessionId]);
+$curGameType = $cur->fetchColumn();
+if ($curGameType === false) json_out(['error' => t('Session not found.')], 404);
+
+$meldMin = null;
+$updateMeld = false;
+if ($curGameType === 'romme' && $meldMinInput !== null && $meldMinInput !== '') {
+  $meldMin = (int)$meldMinInput;
+  if ($meldMin <= 0) json_out(['error' => t('Meld minimum must be > 0.')], 400);
+  $updateMeld = true;
+}
+
 $pdo->beginTransaction();
 try {
-  // update session fields
-  $pdo->prepare("UPDATE sessions SET name=?, max_score_per_round=? WHERE id=?")
-      ->execute([$name, $newMax, $sessionId]);
+  // update session fields (game_type is immutable after creation)
+  if ($updateMeld) {
+    $pdo->prepare("UPDATE sessions SET name=?, max_score_per_round=?, meld_minimum=? WHERE id=?")
+        ->execute([$name, $newMax, $meldMin, $sessionId]);
+  } else {
+    $pdo->prepare("UPDATE sessions SET name=?, max_score_per_round=? WHERE id=?")
+        ->execute([$name, $newMax, $sessionId]);
+  }
 
   if ($prop === 'active') {
     // update only current active round (if any)

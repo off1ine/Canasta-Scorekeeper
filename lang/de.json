@@ -220,5 +220,6 @@
   "Meld minimum must be > 0.": "Mindestauslage muss > 0 sein.",
   "Score to must be >= score from.": "Punkte bis muss ≥ Punkte ab sein.",
   "No active round (round already ended or not started).": "Keine aktive Runde (Runde bereits beendet oder nicht gestartet).",
-  "Unable to determine dealer.": "Geber kann nicht bestimmt werden."
+  "Unable to determine dealer.": "Geber kann nicht bestimmt werden.",
+  "Invalid game type.": "Ungültiger Spieltyp."
 }

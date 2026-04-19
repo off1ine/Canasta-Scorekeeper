@@ -11,7 +11,7 @@ $roundIdParam = (int)($_GET['round_id'] ?? 0);
 if ($sessionId <= 0) json_out(['error' => t('Missing session id.')], 400);
 
 // session
-$sess = $pdo->prepare("SELECT id, name, max_score_per_round, created_at, archived_at
+$sess = $pdo->prepare("SELECT id, name, max_score_per_round, game_type, meld_minimum, created_at, archived_at
                        FROM sessions WHERE id=?");
 $sess->execute([$sessionId]);
 $session = $sess->fetch();

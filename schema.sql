@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS sessions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     max_score_per_round INT NOT NULL,
+    game_type VARCHAR(16) NOT NULL DEFAULT 'canasta',
+    meld_minimum INT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     archived_at TIMESTAMP NULL DEFAULT NULL,
     last_activity_at TIMESTAMP NULL DEFAULT NULL

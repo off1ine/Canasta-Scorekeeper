@@ -2,23 +2,26 @@
 declare(strict_types=1);
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/i18n.php';
 
 function start_app_session(): void {
-  if (session_status() === PHP_SESSION_ACTIVE) return;
+  if (session_status() !== PHP_SESSION_ACTIVE) {
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+    session_name(APP_SESSION_NAME);
 
-  $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
-  session_name(APP_SESSION_NAME);
+    session_set_cookie_params([
+      'lifetime' => 0,
+      'path' => '/',
+      'domain' => '',
+      'secure' => $isHttps,
+      'httponly' => true,
+      'samesite' => 'Lax',
+    ]);
 
-  session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => '',
-    'secure' => $isHttps,
-    'httponly' => true,
-    'samesite' => 'Lax',
-  ]);
+    session_start();
+  }
 
-  session_start();
+  i18n_init();
 }
 
 function current_user(): ?array {

@@ -4,7 +4,7 @@ require_login_page();
 $pageTitle = 'Stats';
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="<?= htmlspecialchars(current_locale(), ENT_QUOTES, "UTF-8") ?>">
 <head>
     <?php include __DIR__ . '/_head.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>

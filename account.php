@@ -4,9 +4,10 @@ require_login_page();
 $u = current_user();
 $initials = strtoupper(mb_substr($u['username'], 0, 2));
 $pageTitle = 'Account';
+$locale = current_locale();
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="<?= htmlspecialchars($locale, ENT_QUOTES, 'UTF-8') ?>">
 <head>
     <?php include __DIR__ . '/_head.php'; ?>
 </head>
@@ -51,6 +52,18 @@ $pageTitle = 'Account';
             <div class="form-helper">
                 PINs are stored hashed. Use HTTPS so logins are protected.
             </div>
+        </section>
+
+        <section class="card">
+            <p class="section-label">Language</p>
+            <div class="form-field">
+                <label for="localeSelect">Interface language</label>
+                <select id="localeSelect">
+                    <option value="en"<?= $locale === 'en' ? ' selected' : '' ?>>English</option>
+                    <option value="de"<?= $locale === 'de' ? ' selected' : '' ?>>Deutsch</option>
+                </select>
+            </div>
+            <div id="localeStatus" class="form-helper"></div>
         </section>
 
         <section class="card">
@@ -107,6 +120,22 @@ $pageTitle = 'Account';
                 document.getElementById("newPin2").value = "";
             } catch (e) {
                 fail(e.message);
+            }
+        });
+
+        document.getElementById("localeSelect").addEventListener("change", async (e) => {
+            const status = document.getElementById("localeStatus");
+            status.textContent = "";
+            status.classList.remove("form-error");
+            try {
+                await api("api/locale.php", {
+                    method: "POST",
+                    body: JSON.stringify({ locale: e.target.value })
+                });
+                window.location.reload();
+            } catch (err) {
+                status.textContent = err.message;
+                status.classList.add("form-error");
             }
         });
     </script>

@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pageTitle = $isBootstrap ? 'Create admin account' : 'Sign in';
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="<?= htmlspecialchars(current_locale(), ENT_QUOTES, "UTF-8") ?>">
 <head>
     <?php include __DIR__ . '/_head.php'; ?>
 </head>

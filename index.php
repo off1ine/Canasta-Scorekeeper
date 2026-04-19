@@ -4,7 +4,7 @@ require_login_page();
 $pageTitle = 'Overview';
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="<?= htmlspecialchars(current_locale(), ENT_QUOTES, "UTF-8") ?>">
 <head>
     <?php include __DIR__ . '/_head.php'; ?>
 </head>

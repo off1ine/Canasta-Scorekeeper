@@ -25,18 +25,30 @@ function fmtNum(n) {
     return Number(n).toLocaleString('en-US');
 }
 
+function t(key, params) {
+    const strings = (window.I18N && window.I18N.strings) || {};
+    let str = strings[key];
+    if (str === undefined || str === null) str = key;
+    if (params) {
+        for (const k of Object.keys(params)) {
+            str = str.split('{' + k + '}').join(String(params[k]));
+        }
+    }
+    return str;
+}
+
 function meldChipClass(meldMin, thresholds) {
     if (meldMin === null || meldMin === undefined) return "chip";
     if (!thresholds || !thresholds.length) return "chip";
 
     const min = Number(meldMin);
-    const matches = thresholds.filter(t => Number(t.meld_minimum) === min);
-    if (matches.length && matches.every(t => Number(t.score_from) < 0)) return "chip";
+    const matches = thresholds.filter(th => Number(th.meld_minimum) === min);
+    if (matches.length && matches.every(th => Number(th.score_from) < 0)) return "chip";
 
     const positiveMins = [...new Set(
         thresholds
-            .filter(t => Number(t.score_from) >= 0)
-            .map(t => Number(t.meld_minimum))
+            .filter(th => Number(th.score_from) >= 0)
+            .map(th => Number(th.meld_minimum))
     )].sort((a, b) => a - b);
 
     if (!positiveMins.length) return "chip";

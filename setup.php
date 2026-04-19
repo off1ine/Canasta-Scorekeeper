@@ -5,7 +5,7 @@ require_admin_page();
 $pageTitle = 'Setup';
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="<?= htmlspecialchars(current_locale(), ENT_QUOTES, "UTF-8") ?>">
 <head>
     <?php include __DIR__ . '/_head.php'; ?>
 </head>

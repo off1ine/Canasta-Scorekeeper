@@ -8,7 +8,7 @@ require_login_api();
 require_admin_api();
 
 $pdo = db();
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_out(['error' => 'Method not allowed'], 405);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_out(['error' => t('Method not allowed.')], 405);
 
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $sessionId = (int)($input['session_id'] ?? 0);
@@ -18,10 +18,10 @@ $newMax = (int)($input['max_score_per_round'] ?? 0);
 // propagation mode: "none" | "active" | "all"
 $prop = (string)($input['propagate'] ?? 'none');
 
-if ($sessionId <= 0) json_out(['error' => 'Invalid session_id'], 400);
-if ($name === '') json_out(['error' => 'Session name required'], 400);
-if ($newMax <= 0) json_out(['error' => 'Max score must be > 0'], 400);
-if (!in_array($prop, ['none','active','all'], true)) json_out(['error' => 'Invalid propagate mode'], 400);
+if ($sessionId <= 0) json_out(['error' => t('Invalid session id.')], 400);
+if ($name === '') json_out(['error' => t('Session name required.')], 400);
+if ($newMax <= 0) json_out(['error' => t('Max score must be > 0.')], 400);
+if (!in_array($prop, ['none','active','all'], true)) json_out(['error' => t('Invalid propagate mode.')], 400);
 
 $pdo->beginTransaction();
 try {

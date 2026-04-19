@@ -8,14 +8,14 @@ require_login_api();
 $pdo = db();
 $sessionId = (int)($_GET['id'] ?? 0);
 $roundIdParam = (int)($_GET['round_id'] ?? 0);
-if ($sessionId <= 0) json_out(['error' => 'Missing session id'], 400);
+if ($sessionId <= 0) json_out(['error' => t('Missing session id.')], 400);
 
 // session
 $sess = $pdo->prepare("SELECT id, name, max_score_per_round, created_at, archived_at
                        FROM sessions WHERE id=?");
 $sess->execute([$sessionId]);
 $session = $sess->fetch();
-if (!$session) json_out(['error' => 'Session not found'], 404);
+if (!$session) json_out(['error' => t('Session not found.')], 404);
 
 // players
 $playersStmt = $pdo->prepare("
@@ -39,7 +39,7 @@ $roundsStmt = $pdo->prepare("
 ");
 $roundsStmt->execute([$sessionId]);
 $rounds = $roundsStmt->fetchAll();
-if (!$rounds) json_out(['error' => 'No rounds found'], 500);
+if (!$rounds) json_out(['error' => t('No rounds found.')], 500);
 
 // pick round
 $round = null;
@@ -47,7 +47,7 @@ if ($roundIdParam > 0) {
   foreach ($rounds as $r) {
     if ((int)$r['id'] === $roundIdParam) { $round = $r; break; }
   }
-  if (!$round) json_out(['error' => 'Round not found in session'], 404);
+  if (!$round) json_out(['error' => t('Round not found in session.')], 404);
 } else {
   // default: active round if any, else last round
   foreach ($rounds as $r) {

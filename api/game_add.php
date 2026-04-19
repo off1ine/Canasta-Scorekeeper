@@ -6,7 +6,7 @@ require_once __DIR__ . '/../helpers.php';
 require_login_api();
 
 $pdo = db();
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_out(['error' => 'Method not allowed'], 405);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_out(['error' => t('Method not allowed.')], 405);
 
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $sessionId = (int)($input['session_id'] ?? 0);
@@ -17,7 +17,7 @@ $dealerPid = array_key_exists('dealer_player_id', $input) && $input['dealer_play
   ? (int)$input['dealer_player_id'] : null;
 
 if ($sessionId <= 0 || !is_array($scoresIn) || count($scoresIn) < 2) {
-  json_out(['error' => 'Invalid input'], 400);
+  json_out(['error' => t('Invalid input.')], 400);
 }
 
 // active round only
@@ -29,7 +29,7 @@ $roundStmt = $pdo->prepare("
 ");
 $roundStmt->execute([$sessionId]);
 $round = $roundStmt->fetch();
-if (!$round) json_out(['error' => 'No active round (round already ended or not started).'], 400);
+if (!$round) json_out(['error' => t('No active round (round already ended or not started).')], 400);
 
 $roundId = (int)$round['id'];
 $target  = (int)$round['target_score'];
@@ -39,7 +39,7 @@ $belongs = $pdo->prepare("SELECT 1 FROM session_players WHERE session_id=? AND p
 
 if ($winnerPid !== null) {
   $belongs->execute([$sessionId, $winnerPid]);
-  if (!$belongs->fetchColumn()) json_out(['error' => 'Winner is not part of this session'], 400);
+  if (!$belongs->fetchColumn()) json_out(['error' => t('Winner is not part of this session.')], 400);
 }
 
 // Server-side dealer suggestion (Approach B reset each round)
@@ -76,11 +76,11 @@ function suggestDealer(PDO $pdo, int $sessionId, int $roundId): ?int {
 if ($dealerPid === null) {
   $dealerPid = suggestDealer($pdo, $sessionId, $roundId);
 }
-if ($dealerPid === null) json_out(['error' => 'Unable to determine dealer'], 400);
+if ($dealerPid === null) json_out(['error' => t('Unable to determine dealer.')], 400);
 
 // validate dealer belongs to session
 $belongs->execute([$sessionId, $dealerPid]);
-if (!$belongs->fetchColumn()) json_out(['error' => 'Dealer is not part of this session'], 400);
+if (!$belongs->fetchColumn()) json_out(['error' => t('Dealer is not part of this session.')], 400);
 
 // next game number
 $gn = $pdo->prepare("SELECT COALESCE(MAX(game_number), 0) + 1 FROM games WHERE round_id=?");

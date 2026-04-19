@@ -8,7 +8,7 @@ require_login_api();
 
 
 $pdo = db();
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_out(['error' => 'Method not allowed'], 405);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_out(['error' => t('Method not allowed.')], 405);
 
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 
@@ -18,7 +18,7 @@ $winnerPid = array_key_exists('winner_player_id', $input) && $input['winner_play
     ? (int)$input['winner_player_id'] : null;
 
 if ($gameId <= 0 || !is_array($scoresIn) || count($scoresIn) < 2) {
-    json_out(['error' => 'Invalid input'], 400);
+    json_out(['error' => t('Invalid input.')], 400);
 }
 
 $dealerPid = array_key_exists('dealer_player_id', $input) && $input['dealer_player_id'] !== null
@@ -34,7 +34,7 @@ $gameStmt = $pdo->prepare("
 ");
 $gameStmt->execute([$gameId]);
 $g = $gameStmt->fetch();
-if (!$g) json_out(['error' => 'Game not found'], 404);
+if (!$g) json_out(['error' => t('Game not found.')], 404);
 
 $roundId = (int)$g['round_id'];
 $sessionId = (int)$g['session_id'];
@@ -47,15 +47,15 @@ $sessionPlayerIds = array_map('intval', array_column($spStmt->fetchAll(), 'playe
 $sessionPlayerSet = array_fill_keys($sessionPlayerIds, true);
 
 if ($dealerPid !== null && !isset($sessionPlayerSet[$dealerPid])) {
-    json_out(['error' => 'Dealer is not part of this session'], 400);
+    json_out(['error' => t('Dealer is not part of this session.')], 400);
 }
 
 
-if (count($sessionPlayerIds) < 2) json_out(['error' => 'Session has insufficient players'], 400);
+if (count($sessionPlayerIds) < 2) json_out(['error' => t('Session has insufficient players.')], 400);
 
 // Validate winner belongs to session
 if ($winnerPid !== null && !isset($sessionPlayerSet[$winnerPid])) {
-    json_out(['error' => 'Winner is not part of this session'], 400);
+    json_out(['error' => t('Winner is not part of this session.')], 400);
 }
 
 $pdo->beginTransaction();

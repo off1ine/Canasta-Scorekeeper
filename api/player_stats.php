@@ -7,12 +7,12 @@ require_login_api();
 
 
 $pdo = db();
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') json_out(['error' => 'Method not allowed'], 405);
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') json_out(['error' => t('Method not allowed.')], 405);
 
 $sessionId = isset($_GET['session_id']) && $_GET['session_id'] !== '' ? (int)$_GET['session_id'] : null;
 
 if ($sessionId !== null && $sessionId <= 0) {
-    json_out(['error' => 'Invalid session_id'], 400);
+    json_out(['error' => t('Invalid session id.')], 400);
 }
 
 /**
@@ -70,7 +70,7 @@ if ($sessionId === null) {
 } else {
     $chk = $pdo->prepare("SELECT 1 FROM sessions WHERE id=?");
     $chk->execute([$sessionId]);
-    if (!$chk->fetchColumn()) json_out(['error' => 'Session not found'], 404);
+    if (!$chk->fetchColumn()) json_out(['error' => t('Session not found.')], 404);
 
     $sql = "
     SELECT

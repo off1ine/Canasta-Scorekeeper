@@ -31,7 +31,7 @@ if ($method === 'POST') {
     $players = $input['players'] ?? [];
 
     if ($name === '' || $max <= 0 || !is_array($players) || count($players) < 2) {
-        json_out(['error' => 'Invalid session data (need name, max>0, >=2 players).'], 400);
+        json_out(['error' => t('Invalid session data (need name, max>0, >=2 players).')], 400);
     }
 
     $pdo->beginTransaction();
@@ -75,4 +75,4 @@ if ($method === 'POST') {
     }
 }
 
-json_out(['error' => 'Method not allowed'], 405);
+json_out(['error' => t('Method not allowed.')], 405);

@@ -199,5 +199,26 @@
   "Score": "Punktzahl",
   "Cumulative points": "Kumulierte Punkte",
   "{name} trend": "{name} Trend",
-  "Avg ({value})": "Ø ({value})"
+  "Avg ({value})": "Ø ({value})",
+
+  "Method not allowed.": "Methode nicht erlaubt.",
+  "Invalid session id.": "Ungültige Session-ID.",
+  "Missing session id.": "Session-ID fehlt.",
+  "Session not found.": "Session nicht gefunden.",
+  "No rounds found.": "Keine Runden gefunden.",
+  "Round not found in session.": "Runde in Session nicht gefunden.",
+  "Invalid propagate mode.": "Ungültige Übernahmeoption.",
+  "Game not found.": "Spiel nicht gefunden.",
+  "Invalid input.": "Ungültige Eingabe.",
+  "Dealer is not part of this session.": "Geber gehört nicht zu dieser Session.",
+  "Session has insufficient players.": "Session hat zu wenige Spieler.",
+  "Winner is not part of this session.": "Gewinner gehört nicht zu dieser Session.",
+  "Invalid date format, use YYYY-MM-DD.": "Ungültiges Datumsformat, bitte YYYY-MM-DD verwenden.",
+  "Missing id.": "ID fehlt.",
+  "You cannot deactivate your own account.": "Du kannst dein eigenes Konto nicht deaktivieren.",
+  "Invalid session data (need name, max>0, >=2 players).": "Ungültige Session-Daten (Name, Max>0, ≥2 Spieler erforderlich).",
+  "Meld minimum must be > 0.": "Mindestauslage muss > 0 sein.",
+  "Score to must be >= score from.": "Punkte bis muss ≥ Punkte ab sein.",
+  "No active round (round already ended or not started).": "Keine aktive Runde (Runde bereits beendet oder nicht gestartet).",
+  "Unable to determine dealer.": "Geber kann nicht bestimmt werden."
 }

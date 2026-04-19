@@ -7,13 +7,13 @@ require_login_api();
 require_admin_api();
 
 $pdo = db();
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_out(['error' => 'Method not allowed'], 405);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_out(['error' => t('Method not allowed.')], 405);
 
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $sessionId = (int)($input['session_id'] ?? 0);
 $archived = (int)($input['archived'] ?? 1) ? 1 : 0; // 1=archive, 0=restore
 
-if ($sessionId <= 0) json_out(['error' => 'Invalid session_id'], 400);
+if ($sessionId <= 0) json_out(['error' => t('Invalid session id.')], 400);
 
 // Safety: prevent archiving a session that currently has an active round? (optional)
 // If you WANT to allow it anyway, remove this check.

@@ -6,17 +6,17 @@ require_login_api();
 
 
 $pdo = db();
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_out(['error' => 'Method not allowed'], 405);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_out(['error' => t('Method not allowed.')], 405);
 
 $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $sessionId = (int)($input['session_id'] ?? 0);
-if ($sessionId <= 0) json_out(['error' => 'Missing session_id'], 400);
+if ($sessionId <= 0) json_out(['error' => t('Missing session id.')], 400);
 
 // session settings (target score)
 $sess = $pdo->prepare("SELECT id, max_score_per_round FROM sessions WHERE id=?");
 $sess->execute([$sessionId]);
 $session = $sess->fetch();
-if (!$session) json_out(['error' => 'Session not found'], 404);
+if (!$session) json_out(['error' => t('Session not found.')], 404);
 $target = (int)$session['max_score_per_round'];
 
 $pdo->beginTransaction();

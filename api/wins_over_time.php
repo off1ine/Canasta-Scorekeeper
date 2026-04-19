@@ -6,14 +6,14 @@ require_once __DIR__ . '/../auth.php';
 require_login_api();
 
 $pdo = db();
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') json_out(['error' => 'Method not allowed'], 405);
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') json_out(['error' => t('Method not allowed.')], 405);
 
 $sessionId = isset($_GET['session_id']) && $_GET['session_id'] !== '' ? (int)$_GET['session_id'] : null;
 $since = isset($_GET['since']) && $_GET['since'] !== '' ? $_GET['since'] : null;
 
 // Validate date format
 if ($since !== null && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $since)) {
-    json_out(['error' => 'Invalid date format, use YYYY-MM-DD'], 400);
+    json_out(['error' => t('Invalid date format, use YYYY-MM-DD.')], 400);
 }
 
 // Get all wins with dates, optionally filtered by session and date

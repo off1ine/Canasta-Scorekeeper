@@ -23,8 +23,8 @@ if ($method === 'POST') {
   $to = $input['score_to'] === null || $input['score_to'] === '' ? null : (int)$input['score_to'];
   $meld = (int)($input['meld_minimum'] ?? 0);
 
-  if ($meld <= 0) json_out(['error' => 'meld_minimum must be > 0'], 400);
-  if ($from !== null && $to !== null && $to < $from) json_out(['error' => 'score_to must be >= score_from'], 400);
+  if ($meld <= 0) json_out(['error' => t('Meld minimum must be > 0.')], 400);
+  if ($from !== null && $to !== null && $to < $from) json_out(['error' => t('Score to must be >= score from.')], 400);
 
   if ($id > 0) {
     $stmt = $pdo->prepare("UPDATE meld_thresholds
@@ -41,9 +41,9 @@ if ($method === 'POST') {
 
 if ($method === 'DELETE') {
   $id = (int)($input['id'] ?? 0);
-  if ($id <= 0) json_out(['error' => 'Missing id'], 400);
+  if ($id <= 0) json_out(['error' => t('Missing id.')], 400);
   $pdo->prepare("DELETE FROM meld_thresholds WHERE id=?")->execute([$id]);
   json_out(['ok' => true]);
 }
 
-json_out(['error' => 'Method not allowed'], 405);
+json_out(['error' => t('Method not allowed.')], 405);

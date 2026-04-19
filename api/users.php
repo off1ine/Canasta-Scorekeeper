@@ -31,7 +31,7 @@ if ($method === 'POST') {
   $is_admin = (int)($input['is_admin'] ?? 0) ? 1 : 0;
   $is_active = (int)($input['is_active'] ?? 1) ? 1 : 0;
 
-  if ($username === '') json_out(['error' => 'Username required'], 400);
+  if ($username === '') json_out(['error' => t('Username required.')], 400);
 
   if ($id > 0) {
     // update
@@ -39,7 +39,7 @@ if ($method === 'POST') {
     $params = [$username, $is_admin, $is_active];
 
     $hashed = pin_hash_or_null($pin);
-    if ($pin !== '' && $hashed === null) json_out(['error' => 'PIN must be exactly 4 digits.'], 400);
+    if ($pin !== '' && $hashed === null) json_out(['error' => t('PIN must be exactly 4 digits.')], 400);
     if ($hashed !== null) { $fields[] = "pin_hash=?"; $params[] = $hashed; }
 
     $params[] = $id;
@@ -49,7 +49,7 @@ if ($method === 'POST') {
     json_out(['ok' => true]);
   } else {
     // create
-    if (!validate_pin($pin)) json_out(['error' => 'PIN must be exactly 4 digits.'], 400);
+    if (!validate_pin($pin)) json_out(['error' => t('PIN must be exactly 4 digits.')], 400);
 
     $stmt = $pdo->prepare("INSERT INTO users (username, pin_hash, is_admin, is_active) VALUES (?, ?, ?, ?)");
     $stmt->execute([$username, password_hash($pin, PASSWORD_DEFAULT), $is_admin, $is_active]);
@@ -59,14 +59,14 @@ if ($method === 'POST') {
 
 if ($method === 'DELETE') {
   $id = (int)($input['id'] ?? 0);
-  if ($id <= 0) json_out(['error' => 'Missing id'], 400);
+  if ($id <= 0) json_out(['error' => t('Missing id.')], 400);
 
   // Prevent deactivating yourself
   $u = current_user();
-  if ($u && (int)$u['id'] === $id) json_out(['error' => 'You cannot deactivate your own account.'], 400);
+  if ($u && (int)$u['id'] === $id) json_out(['error' => t('You cannot deactivate your own account.')], 400);
 
   $pdo->prepare("UPDATE users SET is_active=0 WHERE id=?")->execute([$id]);
   json_out(['ok' => true]);
 }
 
-json_out(['error' => 'Method not allowed'], 405);
+json_out(['error' => t('Method not allowed.')], 405);

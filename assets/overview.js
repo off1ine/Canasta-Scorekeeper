@@ -11,14 +11,17 @@ function setSelectOptions(selectEl, items, selected = null) {
 function setRoundOptions(rounds, selectedRoundId) {
     const items = rounds.map(r => ({
         value: r.id,
-        label: `Round ${r.round_number} (${r.ended_at ? 'ended' : 'active'})`
+        label: t('Round {n} ({status})', {
+            n: r.round_number,
+            status: t(r.ended_at ? 'ended' : 'active')
+        })
     }));
     setSelectOptions(elRound, items, selectedRoundId);
 }
 
 function renderPillGroup(el, players, selected, { allowNone = false } = {}) {
     const options = [];
-    if (allowNone) options.push({ value: "", label: "(none)" });
+    if (allowNone) options.push({ value: "", label: t("(none)") });
     for (const p of players) options.push({ value: String(p.id), label: p.name });
 
     el.innerHTML = options.map(o =>
@@ -104,11 +107,11 @@ function renderScoreboard(d, ended, roundWinner) {
         const pct = target > 0 ? Math.max(0, Math.min(100, (total / target) * 100)) : 0;
 
         const chips = [];
-        if (isLeader) chips.push('<span class="chip chip-indigo">Leader</span>');
-        if (roundWinner === pid) chips.push('<span class="chip chip-amber">Round winner</span>');
+        if (isLeader) chips.push(`<span class="chip chip-indigo">${esc(t('Leader'))}</span>`);
+        if (roundWinner === pid) chips.push(`<span class="chip chip-amber">${esc(t('Round winner'))}</span>`);
 
         const meldChip = (meldMin !== null && meldMin !== undefined)
-            ? `<span class="${meldChipClass(meldMin, d.meld_thresholds)}">Min meld ${meldMin}</span>`
+            ? `<span class="${meldChipClass(meldMin, d.meld_thresholds)}">${esc(t('Min meld {n}', { n: meldMin }))}</span>`
             : '';
 
         const row = document.createElement("div");
@@ -181,7 +184,7 @@ function renderGamesList(d, r) {
 
     elGames.innerHTML = "";
     if (!d.games.length) {
-        elGames.innerHTML = `<div class="muted" style="padding: 8px 0;">No games yet in this round.</div>`;
+        elGames.innerHTML = `<div class="muted" style="padding: 8px 0;">${esc(t('No games yet in this round.'))}</div>`;
         return;
     }
 
@@ -193,11 +196,11 @@ function renderGamesList(d, r) {
             : null;
 
         const title = g.winner_name
-            ? `<span class="game-num">#${g.game_number}</span><span class="game-winner">${esc(g.winner_name)} won</span>`
-            : `<span class="game-num">#${g.game_number}</span><span class="chip">No winner</span>`;
+            ? `<span class="game-num">#${g.game_number}</span><span class="game-winner">${esc(t('{name} won', { name: g.winner_name }))}</span>`
+            : `<span class="game-num">#${g.game_number}</span><span class="chip">${esc(t('No winner'))}</span>`;
 
         const metaParts = [esc(g.played_at)];
-        if (g.dealer_name) metaParts.push(`Dealer ${esc(g.dealer_name)}`);
+        if (g.dealer_name) metaParts.push(esc(t('Dealer {name}', { name: g.dealer_name })));
 
         const scoreBlock = winnerScore !== null
             ? `<div class="game-row-score tabular-nums">${fmtNum(winnerScore)}</div>`
@@ -207,7 +210,7 @@ function renderGamesList(d, r) {
         div.className = "game-row";
         div.setAttribute("role", "button");
         div.setAttribute("tabindex", "0");
-        div.setAttribute("aria-label", `Edit game ${g.game_number}`);
+        div.setAttribute("aria-label", t('Edit game {n}', { n: g.game_number }));
         div.innerHTML = `
             <div class="game-row-main">
                 <div class="game-row-title">${title}</div>
@@ -236,16 +239,27 @@ function render() {
 
     const gameCount = d.games.length;
     const target = fmtNum(r.target_score);
-    const gamesWord = gameCount === 1 ? 'game' : 'games';
-    elMeta.textContent = `Target ${target} · ${gameCount} ${gamesWord} this round`;
+    elMeta.textContent = t(
+        gameCount === 1
+            ? 'Target {target} · {count} game this round'
+            : 'Target {target} · {count} games this round',
+        { target, count: gameCount }
+    );
 
     const endedLabel = ended
-        ? (r.winner_name ? `Ended · Winner: ${r.winner_name}` : 'Ended (no winner)')
-        : 'Active';
-    elRoundTitle.textContent = `Round ${r.round_number} · ${endedLabel}`;
+        ? (r.winner_name
+            ? t('Ended · Winner: {name}', { name: r.winner_name })
+            : t('Ended (no winner)'))
+        : t('Active');
+    elRoundTitle.textContent = t('Round {n} · {status}', { n: r.round_number, status: endedLabel });
 
-    elSummaryTitle.textContent = `${d.session.name} · Round ${r.round_number}`;
-    elSummaryMeta.textContent = `${endedLabel} · ${gameCount} ${gamesWord} · Target ${target}`;
+    elSummaryTitle.textContent = t('{session} · Round {n}', { session: d.session.name, n: r.round_number });
+    elSummaryMeta.textContent = t(
+        gameCount === 1
+            ? '{status} · {count} game · Target {target}'
+            : '{status} · {count} games · Target {target}',
+        { status: endedLabel, count: gameCount, target }
+    );
 
     renderPillGroup(elWinner, d.players, null, { allowNone: true });
     const suggestedDealer = suggestNextDealer(d);
@@ -262,7 +276,7 @@ async function loadSessions() {
     setSelectOptions(elSession, items);
 
     if (!sessions.length) {
-        elMeta.textContent = "No sessions yet. Create one in Setup.";
+        elMeta.textContent = t("No sessions yet. Create one in Setup.");
         return;
     }
 
@@ -344,7 +358,7 @@ function initElements() {
     ];
     const missing = required.filter(([, el]) => !el).map(([name]) => name);
     if (missing.length) {
-        const msg = `Overview page is missing elements: ${missing.join(", ")}`;
+        const msg = t('Overview page is missing elements: {list}', { list: missing.join(", ") });
         if (elMeta) elMeta.textContent = msg;
         throw new Error(msg);
     }
@@ -370,7 +384,7 @@ function setupEventListeners() {
                 body: JSON.stringify({ session_id: current.sessionId, scores, winner_player_id, dealer_player_id })
             });
             await loadSessionRound(current.sessionId, current.roundId);
-            elStatus.textContent = "Game added.";
+            elStatus.textContent = t("Game added.");
         } catch (e) {
             elStatus.textContent = e.message;
         }
@@ -390,7 +404,7 @@ function setupEventListeners() {
 
     elStartRoundBtn.addEventListener("click", async () => {
         elStatus.textContent = "";
-        if (!confirm("End the current active round (if any) and start a new one?")) return;
+        if (!confirm(t("End the current active round (if any) and start a new one?"))) return;
 
         try {
             await api("api/round_start.php", {
@@ -398,7 +412,7 @@ function setupEventListeners() {
                 body: JSON.stringify({ session_id: current.sessionId })
             });
             await loadSessionAndDefaultRound(current.sessionId);
-            elStatus.textContent = "New round started.";
+            elStatus.textContent = t("New round started.");
         } catch (e) {
             elStatus.textContent = e.message;
         }
@@ -431,7 +445,7 @@ function setupEventListeners() {
                 body: JSON.stringify({ game_id, scores, winner_player_id, dealer_player_id })
             });
             await loadSessionRound(current.sessionId, current.roundId);
-            elEditStatus.textContent = "Saved.";
+            elEditStatus.textContent = t("Saved.");
             elEditCard.hidden = true;
             editState.gameId = null;
         } catch (e) {

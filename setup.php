@@ -2,7 +2,7 @@
 require_once __DIR__ . '/auth.php';
 require_login_page();
 require_admin_page();
-$pageTitle = 'Setup';
+$pageTitle = t('Setup');
 ?>
 <!doctype html>
 <html lang="<?= htmlspecialchars(current_locale(), ENT_QUOTES, "UTF-8") ?>">
@@ -14,119 +14,119 @@ $pageTitle = 'Setup';
 
     <main class="wrap">
         <section class="card">
-            <h2>Sessions</h2>
+            <h2><?= htmlspecialchars(t('Sessions'), ENT_QUOTES, 'UTF-8') ?></h2>
 
             <div class="form-field">
-                <label for="sessionSearch">Find session</label>
-                <input id="sessionSearch" type="search" placeholder="Search by name…" />
+                <label for="sessionSearch"><?= htmlspecialchars(t('Find session'), ENT_QUOTES, 'UTF-8') ?></label>
+                <input id="sessionSearch" type="search" placeholder="<?= htmlspecialchars(t('Search by name…'), ENT_QUOTES, 'UTF-8') ?>" />
             </div>
 
             <label class="checkbox-label" style="margin-top: 12px;">
                 <input type="checkbox" id="showArchivedSessions" />
-                Show archived
+                <?= htmlspecialchars(t('Show archived'), ENT_QUOTES, 'UTF-8') ?>
             </label>
 
             <div class="form-actions">
-                <button class="btn full-width" id="newSessionModeBtn" type="button">+ New session</button>
+                <button class="btn full-width" id="newSessionModeBtn" type="button"><?= htmlspecialchars(t('+ New session'), ENT_QUOTES, 'UTF-8') ?></button>
             </div>
 
-            <div id="sessionsStatus" class="muted" style="margin-top: 12px;">Loading…</div>
+            <div id="sessionsStatus" class="muted" style="margin-top: 12px;"><?= htmlspecialchars(t('Loading…'), ENT_QUOTES, 'UTF-8') ?></div>
             <div id="sessionsList" class="admin-list"></div>
 
-            <h3 id="sessionEditorTitle" style="margin-top: 20px;">Create new session</h3>
+            <h3 id="sessionEditorTitle" style="margin-top: 20px;"><?= htmlspecialchars(t('Create new session'), ENT_QUOTES, 'UTF-8') ?></h3>
             <input type="hidden" id="editSessionId" value="" />
 
             <div class="grid2">
                 <div>
-                    <label for="editSessName">Session name</label>
-                    <input id="editSessName" placeholder="e.g. Christmas 2025" />
+                    <label for="editSessName"><?= htmlspecialchars(t('Session name'), ENT_QUOTES, 'UTF-8') ?></label>
+                    <input id="editSessName" placeholder="<?= htmlspecialchars(t('e.g. Christmas 2025'), ENT_QUOTES, 'UTF-8') ?>" />
                 </div>
                 <div>
-                    <label for="editMaxScore">Max score per round</label>
+                    <label for="editMaxScore"><?= htmlspecialchars(t('Max score per round'), ENT_QUOTES, 'UTF-8') ?></label>
                     <input id="editMaxScore" type="number" inputmode="numeric" pattern="[0-9]*" step="1" min="1" value="5000" />
                 </div>
             </div>
 
             <div id="createPlayersBlock" class="form-field">
-                <label for="playerNames">Players (one per line)</label>
+                <label for="playerNames"><?= htmlspecialchars(t('Players (one per line)'), ENT_QUOTES, 'UTF-8') ?></label>
                 <textarea id="playerNames" rows="5" placeholder="Alice&#10;Bob&#10;Charlie"></textarea>
             </div>
 
             <div id="editPropagateBlock" class="form-field" hidden>
-                <label for="editPropagate">Apply max score change to rounds</label>
+                <label for="editPropagate"><?= htmlspecialchars(t('Apply max score change to rounds'), ENT_QUOTES, 'UTF-8') ?></label>
                 <select id="editPropagate">
-                    <option value="none">Only future rounds (recommended)</option>
-                    <option value="active">Also update current active round</option>
-                    <option value="all">Update all rounds in this session (rewrites history)</option>
+                    <option value="none"><?= htmlspecialchars(t('Only future rounds (recommended)'), ENT_QUOTES, 'UTF-8') ?></option>
+                    <option value="active"><?= htmlspecialchars(t('Also update current active round'), ENT_QUOTES, 'UTF-8') ?></option>
+                    <option value="all"><?= htmlspecialchars(t('Update all rounds in this session (rewrites history)'), ENT_QUOTES, 'UTF-8') ?></option>
                 </select>
             </div>
 
             <div id="sessionEditStatus" class="form-helper"></div>
             <div class="edit-actions">
-                <button class="btn primary full-width" id="saveSessionBtn" type="button">Create session</button>
-                <button class="btn full-width" id="clearSessionEditBtn" type="button">Clear</button>
+                <button class="btn primary full-width" id="saveSessionBtn" type="button"><?= htmlspecialchars(t('Create session'), ENT_QUOTES, 'UTF-8') ?></button>
+                <button class="btn full-width" id="clearSessionEditBtn" type="button"><?= htmlspecialchars(t('Clear'), ENT_QUOTES, 'UTF-8') ?></button>
             </div>
         </section>
 
         <section class="card">
-            <h2>Meld minimum thresholds</h2>
-            <p class="muted" style="margin-bottom: 8px;">Score range → required meld minimum for first meld.</p>
+            <h2><?= htmlspecialchars(t('Meld minimum thresholds'), ENT_QUOTES, 'UTF-8') ?></h2>
+            <p class="muted" style="margin-bottom: 8px;"><?= htmlspecialchars(t('Score range → required meld minimum for first meld.'), ENT_QUOTES, 'UTF-8') ?></p>
             <div id="thresholds" class="admin-list"></div>
 
-            <h3 style="margin-top: 20px;">Add / update</h3>
+            <h3 style="margin-top: 20px;"><?= htmlspecialchars(t('Add / update'), ENT_QUOTES, 'UTF-8') ?></h3>
             <div class="grid3">
                 <div>
-                    <label for="tFrom">Score from</label>
+                    <label for="tFrom"><?= htmlspecialchars(t('Score from'), ENT_QUOTES, 'UTF-8') ?></label>
                     <input id="tFrom" type="number" value="0" />
                 </div>
                 <div>
-                    <label for="tTo">Score to</label>
-                    <input id="tTo" type="number" placeholder="blank = ∞" />
+                    <label for="tTo"><?= htmlspecialchars(t('Score to'), ENT_QUOTES, 'UTF-8') ?></label>
+                    <input id="tTo" type="number" placeholder="<?= htmlspecialchars(t('blank = ∞'), ENT_QUOTES, 'UTF-8') ?>" />
                 </div>
                 <div>
-                    <label for="tMeld">Meld minimum</label>
+                    <label for="tMeld"><?= htmlspecialchars(t('Meld minimum'), ENT_QUOTES, 'UTF-8') ?></label>
                     <input id="tMeld" type="number" value="50" min="1" />
                 </div>
             </div>
             <input type="hidden" id="tId" value="" />
             <div id="tStatus" class="form-helper"></div>
             <div class="edit-actions">
-                <button class="btn primary full-width" id="saveThresholdBtn" type="button">Save threshold</button>
-                <button class="btn full-width" id="clearThresholdBtn" type="button">Clear</button>
+                <button class="btn primary full-width" id="saveThresholdBtn" type="button"><?= htmlspecialchars(t('Save threshold'), ENT_QUOTES, 'UTF-8') ?></button>
+                <button class="btn full-width" id="clearThresholdBtn" type="button"><?= htmlspecialchars(t('Clear'), ENT_QUOTES, 'UTF-8') ?></button>
             </div>
         </section>
 
         <section class="card">
-            <h2>Users</h2>
-            <div id="usersStatus" class="muted">Loading…</div>
+            <h2><?= htmlspecialchars(t('Users'), ENT_QUOTES, 'UTF-8') ?></h2>
+            <div id="usersStatus" class="muted"><?= htmlspecialchars(t('Loading…'), ENT_QUOTES, 'UTF-8') ?></div>
             <div id="usersList" class="admin-list"></div>
 
-            <h3 style="margin-top: 20px;">Add / update user</h3>
+            <h3 style="margin-top: 20px;"><?= htmlspecialchars(t('Add / update user'), ENT_QUOTES, 'UTF-8') ?></h3>
             <input type="hidden" id="userId" value="" />
 
             <div class="form-field">
-                <label for="userName">Username</label>
+                <label for="userName"><?= htmlspecialchars(t('Username'), ENT_QUOTES, 'UTF-8') ?></label>
                 <input id="userName" />
             </div>
 
             <div class="form-field">
-                <label for="userPin">PIN (4 digits) — leave empty to keep unchanged</label>
+                <label for="userPin"><?= htmlspecialchars(t('PIN (4 digits) — leave empty to keep unchanged'), ENT_QUOTES, 'UTF-8') ?></label>
                 <input id="userPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" />
             </div>
 
             <label class="checkbox-label" style="margin-top: 12px;">
                 <input type="checkbox" id="userIsAdmin" />
-                Admin
+                <?= htmlspecialchars(t('Admin'), ENT_QUOTES, 'UTF-8') ?>
             </label>
             <label class="checkbox-label">
                 <input type="checkbox" id="userIsActive" checked />
-                Active
+                <?= htmlspecialchars(t('Active'), ENT_QUOTES, 'UTF-8') ?>
             </label>
 
             <div id="userEditStatus" class="form-helper"></div>
             <div class="edit-actions">
-                <button class="btn primary full-width" id="saveUserBtn" type="button">Save user</button>
-                <button class="btn full-width" id="clearUserBtn" type="button">Clear</button>
+                <button class="btn primary full-width" id="saveUserBtn" type="button"><?= htmlspecialchars(t('Save user'), ENT_QUOTES, 'UTF-8') ?></button>
+                <button class="btn full-width" id="clearUserBtn" type="button"><?= htmlspecialchars(t('Clear'), ENT_QUOTES, 'UTF-8') ?></button>
             </div>
         </section>
     </main>

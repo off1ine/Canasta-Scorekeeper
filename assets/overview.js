@@ -119,6 +119,12 @@ function renderScoreboard(d, ended, roundWinner) {
             ? `<span class="${meldChipCls}">${esc(t('Min meld {n}', { n: meldMin }))}</span>`
             : '';
 
+        const progressCls = [
+            'progress-bar',
+            isRomme ? 'is-romme' : '',
+            isLeader ? 'is-leader' : ''
+        ].filter(Boolean).join(' ');
+
         const row = document.createElement("div");
         row.className = "sb-row" + (isLeader ? " is-leader" : "");
         row.innerHTML = `
@@ -130,7 +136,7 @@ function renderScoreboard(d, ended, roundWinner) {
                 <div class="sb-total tabular-nums">${fmtNum(total)}</div>
             </div>
             <div class="progress">
-                <div class="progress-bar${isLeader ? ' is-leader' : ''}" style="width: ${pct}%"></div>
+                <div class="${progressCls}" style="width: ${pct}%"></div>
             </div>
             <div class="sb-row-bottom">
                 <div class="sb-progress-caption tabular-nums">

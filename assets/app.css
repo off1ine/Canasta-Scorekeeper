@@ -494,6 +494,10 @@ textarea {
 
 .progress-bar.is-leader { background: var(--primary); }
 
+/* Rommé: filling the bar means heading toward the loss ceiling. */
+.progress-bar.is-romme { background: var(--danger); }
+.progress-bar.is-romme.is-leader { background: var(--success); }
+
 /* ---------- Bottom tab bar ---------- */
 .bottom-nav {
     position: fixed;

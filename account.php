@@ -3,7 +3,7 @@ require_once __DIR__ . '/auth.php';
 require_login_page();
 $u = current_user();
 $initials = strtoupper(mb_substr($u['username'], 0, 2));
-$pageTitle = 'Account';
+$pageTitle = t('Account');
 $locale = current_locale();
 ?>
 <!doctype html>
@@ -22,42 +22,42 @@ $locale = current_locale();
                     <?= htmlspecialchars($u['username'], ENT_QUOTES, 'UTF-8') ?>
                 </div>
                 <?php if ($u['is_admin']): ?>
-                    <span class="chip chip-indigo">Admin</span>
+                    <span class="chip chip-indigo"><?= htmlspecialchars(t('Admin'), ENT_QUOTES, 'UTF-8') ?></span>
                 <?php endif; ?>
             </div>
 
-            <p class="section-label" style="margin-top:20px;">Change PIN</p>
+            <p class="section-label" style="margin-top:20px;"><?= htmlspecialchars(t('Change PIN'), ENT_QUOTES, 'UTF-8') ?></p>
 
             <div class="form-field">
-                <label for="oldPin">Current PIN</label>
+                <label for="oldPin"><?= htmlspecialchars(t('Current PIN'), ENT_QUOTES, 'UTF-8') ?></label>
                 <input id="oldPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="current-password" />
             </div>
 
             <div class="form-field">
-                <label for="newPin">New PIN (4 digits)</label>
+                <label for="newPin"><?= htmlspecialchars(t('New PIN (4 digits)'), ENT_QUOTES, 'UTF-8') ?></label>
                 <input id="newPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="new-password" />
             </div>
 
             <div class="form-field">
-                <label for="newPin2">Repeat new PIN</label>
+                <label for="newPin2"><?= htmlspecialchars(t('Repeat new PIN'), ENT_QUOTES, 'UTF-8') ?></label>
                 <input id="newPin2" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="new-password" />
             </div>
 
             <div id="pinStatus" class="form-helper"></div>
 
             <div class="form-actions">
-                <button class="btn primary full-width" id="changePinBtn" type="button">Update PIN</button>
+                <button class="btn primary full-width" id="changePinBtn" type="button"><?= htmlspecialchars(t('Update PIN'), ENT_QUOTES, 'UTF-8') ?></button>
             </div>
 
             <div class="form-helper">
-                PINs are stored hashed. Use HTTPS so logins are protected.
+                <?= htmlspecialchars(t('PINs are stored hashed. Use HTTPS so logins are protected.'), ENT_QUOTES, 'UTF-8') ?>
             </div>
         </section>
 
         <section class="card">
-            <p class="section-label">Language</p>
+            <p class="section-label"><?= htmlspecialchars(t('Language'), ENT_QUOTES, 'UTF-8') ?></p>
             <div class="form-field">
-                <label for="localeSelect">Interface language</label>
+                <label for="localeSelect"><?= htmlspecialchars(t('Interface language'), ENT_QUOTES, 'UTF-8') ?></label>
                 <select id="localeSelect">
                     <option value="en"<?= $locale === 'en' ? ' selected' : '' ?>>English</option>
                     <option value="de"<?= $locale === 'de' ? ' selected' : '' ?>>Deutsch</option>
@@ -69,26 +69,15 @@ $locale = current_locale();
         <section class="card">
             <a class="btn danger full-width" href="logout.php">
                 <span class="material-symbols-outlined" aria-hidden="true">logout</span>
-                Log out
+                <?= htmlspecialchars(t('Log out'), ENT_QUOTES, 'UTF-8') ?>
             </a>
         </section>
     </main>
 
     <?php include __DIR__ . '/_nav.php'; ?>
 
+    <script src="assets/utils.js?v=<?= filemtime(__DIR__.'/assets/utils.js') ?>"></script>
     <script>
-        async function api(url, opts = {}) {
-            const res = await fetch(url, { headers: { "Content-Type": "application/json" }, ...opts });
-            if (res.status === 401) {
-                const next = encodeURIComponent(window.location.pathname + window.location.search);
-                window.location.href = `login.php?next=${next}`;
-                throw new Error("Not authenticated");
-            }
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error || "Request failed");
-            return data;
-        }
-
         function isPin(s) { return /^\d{4}$/.test(s); }
 
         document.getElementById("changePinBtn").addEventListener("click", async () => {
@@ -105,16 +94,16 @@ $locale = current_locale();
                 status.classList.add("form-error");
             }
 
-            if (!isPin(oldPin) || !isPin(newPin) || !isPin(newPin2)) return fail("PINs must be exactly 4 digits.");
-            if (newPin !== newPin2) return fail("New PINs do not match.");
-            if (oldPin === newPin) return fail("New PIN must be different.");
+            if (!isPin(oldPin) || !isPin(newPin) || !isPin(newPin2)) return fail(t("PINs must be exactly 4 digits."));
+            if (newPin !== newPin2) return fail(t("New PINs do not match."));
+            if (oldPin === newPin) return fail(t("New PIN must be different."));
 
             try {
                 await api("api/change_pin.php", {
                     method: "POST",
                     body: JSON.stringify({ old_pin: oldPin, new_pin: newPin })
                 });
-                status.textContent = "PIN updated.";
+                status.textContent = t("PIN updated.");
                 document.getElementById("oldPin").value = "";
                 document.getElementById("newPin").value = "";
                 document.getElementById("newPin2").value = "";

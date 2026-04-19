@@ -15,5 +15,27 @@
   "4-digit PIN": "4-stellige PIN",
   "Enter a username and a 4-digit PIN.": "Benutzername und 4-stellige PIN eingeben.",
   "Invalid username or PIN.": "Ungültiger Benutzername oder PIN.",
-  "PINs are stored hashed. Use HTTPS so logins are protected.": "PINs werden gehasht gespeichert. Verwende HTTPS, damit Anmeldungen geschützt sind."
+  "PINs are stored hashed. Use HTTPS so logins are protected.": "PINs werden gehasht gespeichert. Verwende HTTPS, damit Anmeldungen geschützt sind.",
+
+  "Admin": "Administrator",
+  "Change PIN": "PIN ändern",
+  "Current PIN": "Aktuelle PIN",
+  "New PIN (4 digits)": "Neue PIN (4 Ziffern)",
+  "Repeat new PIN": "Neue PIN wiederholen",
+  "Update PIN": "PIN aktualisieren",
+  "Language": "Sprache",
+  "Interface language": "Oberflächensprache",
+  "Log out": "Abmelden",
+
+  "PINs must be exactly 4 digits.": "PINs müssen genau 4 Ziffern haben.",
+  "New PINs do not match.": "Die neuen PINs stimmen nicht überein.",
+  "New PIN must be different.": "Die neue PIN muss sich von der alten unterscheiden.",
+  "PIN updated.": "PIN aktualisiert.",
+  "PIN must be exactly 4 digits.": "PIN muss genau 4 Ziffern haben.",
+  "Current PIN is incorrect.": "Aktuelle PIN ist falsch.",
+  "User not found or inactive.": "Benutzer nicht gefunden oder inaktiv.",
+
+  "Not authenticated": "Nicht angemeldet",
+  "Request failed": "Anfrage fehlgeschlagen",
+  "Unsupported locale.": "Sprache nicht unterstützt."
 }

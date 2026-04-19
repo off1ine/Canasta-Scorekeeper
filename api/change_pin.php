@@ -12,19 +12,19 @@ $old = trim((string)($input['old_pin'] ?? ''));
 $new = trim((string)($input['new_pin'] ?? ''));
 
 if (!validate_pin($old) || !validate_pin($new)) {
-  json_out(['error' => 'PIN must be exactly 4 digits.'], 400);
+  json_out(['error' => t('PIN must be exactly 4 digits.')], 400);
 }
 if ($old === $new) {
-  json_out(['error' => 'New PIN must be different.'], 400);
+  json_out(['error' => t('New PIN must be different.')], 400);
 }
 
 $stmt = $pdo->prepare("SELECT pin_hash FROM users WHERE id=? AND is_active=1");
 $stmt->execute([(int)$u['id']]);
 $row = $stmt->fetch();
-if (!$row) json_out(['error' => 'User not found or inactive'], 404);
+if (!$row) json_out(['error' => t('User not found or inactive.')], 404);
 
 if (!password_verify($old, (string)$row['pin_hash'])) {
-  json_out(['error' => 'Current PIN is incorrect.'], 400);
+  json_out(['error' => t('Current PIN is incorrect.')], 400);
 }
 
 $pdo->prepare("UPDATE users SET pin_hash=? WHERE id=?")

@@ -11,4 +11,4 @@ $locale = (string)($input['locale'] ?? '');
 if (set_locale($locale)) {
     json_out(['ok' => true, 'locale' => $locale]);
 }
-json_out(['error' => 'Unsupported locale'], 400);
+json_out(['error' => t('Unsupported locale.')], 400);

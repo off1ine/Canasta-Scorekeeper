@@ -7,11 +7,11 @@ async function api(url, opts = {}) {
     if (res.status === 401) {
         const next = encodeURIComponent(window.location.pathname + window.location.search);
         window.location.href = `login.php?next=${next}`;
-        throw new Error("Not authenticated");
+        throw new Error(t("Not authenticated"));
     }
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Request failed");
+    if (!res.ok) throw new Error(data.error || t("Request failed"));
     return data;
 }
 

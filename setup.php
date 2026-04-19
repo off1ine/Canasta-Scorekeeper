@@ -47,6 +47,20 @@ $pageTitle = t('Setup');
                 </div>
             </div>
 
+            <div id="gameTypeBlock" class="form-field" style="margin-top: 14px;">
+                <label><?= htmlspecialchars(t('Game type'), ENT_QUOTES, 'UTF-8') ?></label>
+                <div class="pill-group" id="gameTypeGroup" data-selected="canasta">
+                    <button type="button" class="pill-option is-active" data-value="canasta"><?= htmlspecialchars(t('Canasta'), ENT_QUOTES, 'UTF-8') ?></button>
+                    <button type="button" class="pill-option" data-value="romme"><?= htmlspecialchars(t('Rommé'), ENT_QUOTES, 'UTF-8') ?></button>
+                </div>
+                <div id="gameTypeLocked" class="form-helper" hidden><?= htmlspecialchars(t('Game type cannot be changed after the session is created.'), ENT_QUOTES, 'UTF-8') ?></div>
+            </div>
+
+            <div id="editMeldMinBlock" class="form-field" hidden>
+                <label for="editMeldMin"><?= htmlspecialchars(t('Meld minimum (Erstmeldung)'), ENT_QUOTES, 'UTF-8') ?></label>
+                <input id="editMeldMin" type="number" inputmode="numeric" pattern="[0-9]*" step="1" min="1" value="30" />
+            </div>
+
             <div id="createPlayersBlock" class="form-field">
                 <label for="playerNames"><?= htmlspecialchars(t('Players (one per line)'), ENT_QUOTES, 'UTF-8') ?></label>
                 <textarea id="playerNames" rows="5" placeholder="Alice&#10;Bob&#10;Charlie"></textarea>

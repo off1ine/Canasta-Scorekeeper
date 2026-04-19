@@ -11,8 +11,32 @@ const elPlayersBlock = document.getElementById("createPlayersBlock");
 const elPropBlock = document.getElementById("editPropagateBlock");
 const elSearch = document.getElementById("sessionSearch");
 const elShowArchived = document.getElementById("showArchivedSessions");
+const elGameTypeGroup = document.getElementById("gameTypeGroup");
+const elGameTypeLocked = document.getElementById("gameTypeLocked");
+const elMeldMinBlock = document.getElementById("editMeldMinBlock");
+const elMeldMin = document.getElementById("editMeldMin");
 
 let allSessionsCache = [];
+
+function setGameTypeGroupValue(value) {
+    elGameTypeGroup.dataset.selected = value;
+    elGameTypeGroup.querySelectorAll(".pill-option").forEach(btn => {
+        btn.classList.toggle("is-active", btn.dataset.value === value);
+    });
+}
+
+function setGameTypeGroupLocked(locked) {
+    elGameTypeGroup.classList.toggle("is-disabled", locked);
+    elGameTypeLocked.hidden = !locked;
+}
+
+function currentGameType() {
+    return elGameTypeGroup.dataset.selected || "canasta";
+}
+
+function updateMeldMinVisibility() {
+    elMeldMinBlock.hidden = currentGameType() !== "romme";
+}
 
 function setCreateMode() {
     document.getElementById("editSessionId").value = "";
@@ -24,6 +48,10 @@ function setCreateMode() {
     document.getElementById("playerNames").value = "";
     document.getElementById("editSessName").value = "";
     document.getElementById("editMaxScore").value = "5000";
+    setGameTypeGroupValue("canasta");
+    setGameTypeGroupLocked(false);
+    elMeldMin.value = "30";
+    updateMeldMinVisibility();
     elSessionEditStatus.textContent = "";
 }
 
@@ -36,8 +64,20 @@ function setEditMode(session) {
     document.getElementById("editSessName").value = session.name;
     document.getElementById("editMaxScore").value = session.max_score_per_round ?? 5000;
     document.getElementById("editPropagate").value = "none";
+    setGameTypeGroupValue(session.game_type || "canasta");
+    setGameTypeGroupLocked(true);
+    elMeldMin.value = session.meld_minimum ?? 30;
+    updateMeldMinVisibility();
     elSessionEditStatus.textContent = t("Editing session…");
 }
+
+elGameTypeGroup.addEventListener("click", (e) => {
+    if (elGameTypeGroup.classList.contains("is-disabled")) return;
+    const btn = e.target.closest(".pill-option");
+    if (!btn || !elGameTypeGroup.contains(btn)) return;
+    setGameTypeGroupValue(btn.dataset.value);
+    updateMeldMinVisibility();
+});
 
 async function loadSessionsAdmin() {
     if (!elSessionsStatus) return;
@@ -68,11 +108,14 @@ function renderSessionsList() {
         const archiveIcon = archived ? 'unarchive' : 'archive';
         const archiveAttr = archived ? 'data-restore' : 'data-archive';
         const archiveLabel = archived ? t('Restore {name}', { name: s.name }) : t('Archive {name}', { name: s.name });
+        const gameType = s.game_type || 'canasta';
+        const typeLabel = gameType === 'romme' ? t('Rommé') : t('Canasta');
         return `
             <div class="admin-row">
                 <div class="admin-row-main">
                     <div class="admin-row-title">
                         ${esc(s.name)}
+                        <span class="chip">${esc(typeLabel)}</span>
                         ${archived ? `<span class="chip">${esc(t('Archived'))}</span>` : ''}
                     </div>
                     ${meta ? `<div class="muted-sm">${meta}</div>` : ''}
@@ -135,9 +178,16 @@ elSaveSessionBtn?.addEventListener("click", async () => {
     const isEdit = idVal !== "";
     const name = document.getElementById("editSessName").value.trim();
     const max = Number(document.getElementById("editMaxScore").value || 0);
+    const gameType = currentGameType();
+    const meldMinRaw = elMeldMin.value.trim();
+    const meldMin = meldMinRaw === "" ? null : Number(meldMinRaw);
 
     if (!name) { elSessionEditStatus.textContent = t("Session name required."); return; }
     if (!Number.isFinite(max) || max <= 0) { elSessionEditStatus.textContent = t("Max score must be > 0."); return; }
+    if (gameType === "romme" && (!Number.isFinite(meldMin) || meldMin <= 0)) {
+        elSessionEditStatus.textContent = t("Meld minimum must be > 0.");
+        return;
+    }
 
     try {
         if (!isEdit) {
@@ -146,9 +196,12 @@ elSaveSessionBtn?.addEventListener("click", async () => {
 
             if (players.length < 2) { elSessionEditStatus.textContent = t("Enter at least 2 players."); return; }
 
+            const body = { name, max_score_per_round: max, players, game_type: gameType };
+            if (gameType === "romme") body.meld_minimum = meldMin;
+
             const r = await api("api/sessions.php", {
                 method: "POST",
-                body: JSON.stringify({ name, max_score_per_round: max, players })
+                body: JSON.stringify(body)
             });
 
             elSessionEditStatus.textContent = t("Created session #{id}. Go to {page}.", { id: r.session_id, page: t("Overview") });
@@ -164,9 +217,12 @@ elSaveSessionBtn?.addEventListener("click", async () => {
                 }
             }
 
+            const body = { session_id, name, max_score_per_round: max, propagate };
+            if (gameType === "romme") body.meld_minimum = meldMin;
+
             await api("api/session_update.php", {
                 method: "POST",
-                body: JSON.stringify({ session_id, name, max_score_per_round: max, propagate })
+                body: JSON.stringify(body)
             });
 
             await loadSessionsAdmin();

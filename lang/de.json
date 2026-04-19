@@ -221,5 +221,10 @@
   "Score to must be >= score from.": "Punkte bis muss ≥ Punkte ab sein.",
   "No active round (round already ended or not started).": "Keine aktive Runde (Runde bereits beendet oder nicht gestartet).",
   "Unable to determine dealer.": "Geber kann nicht bestimmt werden.",
-  "Invalid game type.": "Ungültiger Spieltyp."
+  "Invalid game type.": "Ungültiger Spieltyp.",
+  "Game type": "Spieltyp",
+  "Canasta": "Canasta",
+  "Rommé": "Rommé",
+  "Game type cannot be changed after the session is created.": "Der Spieltyp kann nach Erstellung der Session nicht mehr geändert werden.",
+  "Meld minimum (Erstmeldung)": "Mindestauslage (Erstmeldung)"
 }

@@ -77,7 +77,7 @@ $pageTitle = t('Setup');
             <div class="grid3">
                 <div>
                     <label for="tFrom"><?= htmlspecialchars(t('Score from'), ENT_QUOTES, 'UTF-8') ?></label>
-                    <input id="tFrom" type="number" value="0" />
+                    <input id="tFrom" type="number" placeholder="<?= htmlspecialchars(t('blank = -∞'), ENT_QUOTES, 'UTF-8') ?>" />
                 </div>
                 <div>
                     <label for="tTo"><?= htmlspecialchars(t('Score to'), ENT_QUOTES, 'UTF-8') ?></label>

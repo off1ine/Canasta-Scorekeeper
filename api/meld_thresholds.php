@@ -19,12 +19,12 @@ $input = json_decode(file_get_contents('php://input'), true) ?? [];
 
 if ($method === 'POST') {
   $id = (int)($input['id'] ?? 0);
-  $from = (int)($input['score_from'] ?? 0);
+  $from = $input['score_from'] === null || $input['score_from'] === '' ? null : (int)$input['score_from'];
   $to = $input['score_to'] === null || $input['score_to'] === '' ? null : (int)$input['score_to'];
   $meld = (int)($input['meld_minimum'] ?? 0);
 
   if ($meld <= 0) json_out(['error' => 'meld_minimum must be > 0'], 400);
-  if ($to !== null && $to < $from) json_out(['error' => 'score_to must be >= score_from'], 400);
+  if ($from !== null && $to !== null && $to < $from) json_out(['error' => 'score_to must be >= score_from'], 400);
 
   if ($id > 0) {
     $stmt = $pdo->prepare("UPDATE meld_thresholds

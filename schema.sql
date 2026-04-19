@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS game_scores (
 
 CREATE TABLE IF NOT EXISTS meld_thresholds (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    score_from INT NOT NULL,
+    score_from INT NULL,
     score_to INT NULL,
     meld_minimum INT NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

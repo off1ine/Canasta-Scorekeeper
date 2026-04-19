@@ -106,6 +106,7 @@
   "Score from": "Punkte ab",
   "Score to": "Punkte bis",
   "blank = ∞": "leer = ∞",
+  "blank = -∞": "leer = -∞",
   "Meld minimum": "Mindestauslage",
   "Save threshold": "Schwelle speichern",
   "Users": "Benutzer",

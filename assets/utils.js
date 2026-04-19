@@ -43,11 +43,12 @@ function meldChipClass(meldMin, thresholds) {
 
     const min = Number(meldMin);
     const matches = thresholds.filter(th => Number(th.meld_minimum) === min);
-    if (matches.length && matches.every(th => Number(th.score_from) < 0)) return "chip";
+    const isBelowZero = th => th.score_from === null || Number(th.score_from) < 0;
+    if (matches.length && matches.every(isBelowZero)) return "chip";
 
     const positiveMins = [...new Set(
         thresholds
-            .filter(th => Number(th.score_from) >= 0)
+            .filter(th => !isBelowZero(th))
             .map(th => Number(th.meld_minimum))
     )].sort((a, b) => a - b);
 

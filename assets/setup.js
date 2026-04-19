@@ -201,7 +201,9 @@ async function loadThresholds() {
     }
 
     elThresholds.innerHTML = thresholds.map(th => {
-        const range = `${fmtNum(th.score_from)} – ${th.score_to === null ? '∞' : fmtNum(th.score_to)}`;
+        const fromLabel = th.score_from === null ? '-∞' : fmtNum(th.score_from);
+        const toLabel = th.score_to === null ? '∞' : fmtNum(th.score_to);
+        const range = `${fromLabel} – ${toLabel}`;
         const chipCls = meldChipClass(th.meld_minimum, thresholds);
         return `
             <div class="admin-row">
@@ -224,13 +226,13 @@ async function loadThresholds() {
     thresholds.forEach(th => {
         elThresholds.querySelector(`[data-edit="${th.id}"]`).addEventListener("click", () => {
             document.getElementById("tId").value = th.id;
-            document.getElementById("tFrom").value = th.score_from;
+            document.getElementById("tFrom").value = th.score_from ?? "";
             document.getElementById("tTo").value = th.score_to ?? "";
             document.getElementById("tMeld").value = th.meld_minimum;
             elTStatus.textContent = t("Editing threshold…");
         });
         elThresholds.querySelector(`[data-del="${th.id}"]`).addEventListener("click", async () => {
-            if (!confirm(t("Delete threshold {from}–{to}?", { from: th.score_from, to: th.score_to ?? '∞' }))) return;
+            if (!confirm(t("Delete threshold {from}–{to}?", { from: th.score_from ?? '-∞', to: th.score_to ?? '∞' }))) return;
             try {
                 await api("api/meld_thresholds.php", {
                     method: "DELETE",
@@ -249,7 +251,8 @@ document.getElementById("saveThresholdBtn").addEventListener("click", async () =
     elTStatus.textContent = "";
     const idVal = document.getElementById("tId").value.trim();
     const id = idVal ? Number(idVal) : 0;
-    const from = Number(document.getElementById("tFrom").value || 0);
+    const fromRaw = document.getElementById("tFrom").value.trim();
+    const score_from = fromRaw === "" ? null : Number(fromRaw);
     const toRaw = document.getElementById("tTo").value.trim();
     const score_to = toRaw === "" ? null : Number(toRaw);
     const meld_minimum = Number(document.getElementById("tMeld").value || 0);
@@ -257,7 +260,7 @@ document.getElementById("saveThresholdBtn").addEventListener("click", async () =
     try {
         await api("api/meld_thresholds.php", {
             method: "POST",
-            body: JSON.stringify({ id, score_from: from, score_to, meld_minimum })
+            body: JSON.stringify({ id, score_from, score_to, meld_minimum })
         });
         await loadThresholds();
         elTStatus.textContent = t("Saved.");
@@ -268,7 +271,7 @@ document.getElementById("saveThresholdBtn").addEventListener("click", async () =
 
 document.getElementById("clearThresholdBtn").addEventListener("click", () => {
     document.getElementById("tId").value = "";
-    document.getElementById("tFrom").value = 0;
+    document.getElementById("tFrom").value = "";
     document.getElementById("tTo").value = "";
     document.getElementById("tMeld").value = 50;
     elTStatus.textContent = "";

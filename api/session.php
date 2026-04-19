@@ -114,9 +114,9 @@ $meld = $pdo->query("SELECT id, score_from, score_to, meld_minimum
 
 function meldMinimumForScore(array $thresholds, int $score): ?int {
   foreach ($thresholds as $t) {
-    $from = (int)$t['score_from'];
-    $to   = $t['score_to'] === null ? null : (int)$t['score_to'];
-    if ($score >= $from && ($to === null || $score <= $to)) {
+    $from = $t['score_from'] === null ? null : (int)$t['score_from'];
+    $to   = $t['score_to']   === null ? null : (int)$t['score_to'];
+    if (($from === null || $score >= $from) && ($to === null || $score <= $to)) {
       return (int)$t['meld_minimum'];
     }
   }

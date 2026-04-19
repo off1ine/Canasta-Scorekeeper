@@ -68,9 +68,13 @@ if ($sessionId === null) {
 
     $rows = $pdo->query($sql)->fetchAll();
 } else {
-    $chk = $pdo->prepare("SELECT 1 FROM sessions WHERE id=?");
+    $chk = $pdo->prepare("SELECT game_type FROM sessions WHERE id=?");
     $chk->execute([$sessionId]);
-    if (!$chk->fetchColumn()) json_out(['error' => t('Session not found.')], 404);
+    $sessGameType = $chk->fetchColumn();
+    if ($sessGameType === false) json_out(['error' => t('Session not found.')], 404);
+
+    // Canasta: highest total wins → DESC. Rommé: lowest total wins → ASC.
+    $totalOrder = $sessGameType === 'romme' ? 'ASC' : 'DESC';
 
     $sql = "
     SELECT
@@ -107,7 +111,7 @@ if ($sessionId === null) {
     FROM session_players sp
     JOIN players p ON p.id = sp.player_id
     WHERE sp.session_id = ?
-    ORDER BY total_points DESC, won_rounds DESC, won_games DESC, p.name ASC
+    ORDER BY total_points {$totalOrder}, won_rounds DESC, won_games DESC, p.name ASC
   ";
 
     $stmt = $pdo->prepare($sql);

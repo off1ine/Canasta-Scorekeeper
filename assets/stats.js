@@ -73,9 +73,9 @@ async function loadSessions() {
     sessionsById = new Map(active.map(s => [Number(s.id), s]));
 
     if (!active.length) {
-        elSession.innerHTML = `<option value="">(no sessions)</option>`;
+        elSession.innerHTML = `<option value="">${esc(t('(no sessions)'))}</option>`;
         elSession.disabled = true;
-        elMeta.textContent = "No sessions yet. Create one in Setup.";
+        elMeta.textContent = t("No sessions yet. Create one in Setup.");
         return;
     }
 
@@ -90,18 +90,18 @@ function getSelectedSessionId() {
 }
 
 async function loadStats() {
-    elMeta.textContent = "Loading…";
+    elMeta.textContent = t("Loading…");
     elList.innerHTML = "";
-    elHSMeta.textContent = "Loading…";
+    elHSMeta.textContent = t("Loading…");
     elHSList.innerHTML = "";
-    elLSMeta.textContent = "Loading…";
+    elLSMeta.textContent = t("Loading…");
     elLSList.innerHTML = "";
-    elDIMeta.textContent = "Loading…";
+    elDIMeta.textContent = t("Loading…");
     elDIList.innerHTML = "";
 
     const sessionId = getSelectedSessionId();
     if (!sessionId) {
-        elMeta.textContent = "Select a session.";
+        elMeta.textContent = t("Select a session.");
         return;
     }
 
@@ -109,7 +109,10 @@ async function loadStats() {
         await api(`api/player_stats.php?session_id=${encodeURIComponent(sessionId)}`);
 
     const sessionName = sessionsById.get(sessionId)?.name ?? `#${sessionId}`;
-    elMeta.textContent = `${sessionName} · ${fmtInt(players.length)} player${players.length === 1 ? '' : 's'}`;
+    elMeta.textContent = t(
+        players.length === 1 ? '{session} · {count} player' : '{session} · {count} players',
+        { session: sessionName, count: fmtInt(players.length) }
+    );
 
     renderPlayerStandings(players);
     renderHighScores(high_scores || []);
@@ -119,7 +122,7 @@ async function loadStats() {
 
 function renderPlayerStandings(players) {
     if (!players.length) {
-        elList.innerHTML = `<div class="muted" style="padding: 8px 0;">No data yet.</div>`;
+        elList.innerHTML = `<div class="muted" style="padding: 8px 0;">${esc(t('No data yet.'))}</div>`;
         return;
     }
     elList.innerHTML = players.map(p => `
@@ -129,11 +132,11 @@ function renderPlayerStandings(players) {
                 <div class="stat-row-total tabular-nums">${fmtInt(p.total_points)}</div>
             </div>
             <div class="stat-row-metrics">
-                <span class="stat-metric"><span class="stat-metric-label">Games</span><span class="stat-metric-val tabular-nums">${fmtInt(p.games_played)}</span></span>
-                <span class="stat-metric"><span class="stat-metric-label">Wins</span><span class="stat-metric-val tabular-nums">${fmtInt(p.won_games)}</span></span>
-                <span class="stat-metric"><span class="stat-metric-label">Win rate</span><span class="stat-metric-val tabular-nums">${fmtPercent(p.win_rate_games)}</span></span>
-                <span class="stat-metric"><span class="stat-metric-label">Rounds won</span><span class="stat-metric-val tabular-nums">${fmtInt(p.won_rounds)}</span></span>
-                <span class="stat-metric"><span class="stat-metric-label">Avg/game</span><span class="stat-metric-val tabular-nums">${fmtAvg(p.avg_points_per_game)}</span></span>
+                <span class="stat-metric"><span class="stat-metric-label">${esc(t('Games'))}</span><span class="stat-metric-val tabular-nums">${fmtInt(p.games_played)}</span></span>
+                <span class="stat-metric"><span class="stat-metric-label">${esc(t('Wins'))}</span><span class="stat-metric-val tabular-nums">${fmtInt(p.won_games)}</span></span>
+                <span class="stat-metric"><span class="stat-metric-label">${esc(t('Win rate'))}</span><span class="stat-metric-val tabular-nums">${fmtPercent(p.win_rate_games)}</span></span>
+                <span class="stat-metric"><span class="stat-metric-label">${esc(t('Rounds won'))}</span><span class="stat-metric-val tabular-nums">${fmtInt(p.won_rounds)}</span></span>
+                <span class="stat-metric"><span class="stat-metric-label">${esc(t('Avg/game'))}</span><span class="stat-metric-val tabular-nums">${fmtAvg(p.avg_points_per_game)}</span></span>
             </div>
         </div>
     `).join("");
@@ -146,9 +149,9 @@ function rankPillClass(i) {
     return "rank-pill";
 }
 
-function renderScoreRanks(rows, container, metaEl, labelSingular, metaFormatter, useMedals) {
+function renderScoreRanks(rows, container, metaEl, emptyKey, metaFormatter, useMedals) {
     if (!rows.length) {
-        metaEl.textContent = `No ${labelSingular} scores yet.`;
+        metaEl.textContent = t(emptyKey);
         container.innerHTML = "";
         return;
     }
@@ -160,7 +163,7 @@ function renderScoreRanks(rows, container, metaEl, labelSingular, metaFormatter,
                 <div class="rank-row-score tabular-nums">${fmtInt(row.score)}</div>
                 <div class="rank-row-meta">
                     <span class="rank-row-player">${esc(row.player_name)}</span>
-                    · R${fmtInt(row.round_number)} G${fmtInt(row.game_number)} · ${esc(row.played_at)}
+                    · ${esc(t('R{r} G{g}', { r: fmtInt(row.round_number), g: fmtInt(row.game_number) }))} · ${esc(row.played_at)}
                 </div>
             </div>
         </div>
@@ -168,22 +171,31 @@ function renderScoreRanks(rows, container, metaEl, labelSingular, metaFormatter,
 }
 
 function renderHighScores(rows) {
-    renderScoreRanks(rows, elHSList, elHSMeta, 'high',
-        n => `Top ${fmtInt(n)} single-game score${n === 1 ? '' : 's'}`, true);
+    renderScoreRanks(rows, elHSList, elHSMeta, 'No high scores yet.',
+        n => t(
+            n === 1 ? 'Top {n} single-game score' : 'Top {n} single-game scores',
+            { n: fmtInt(n) }
+        ), true);
 }
 
 function renderLowScores(rows) {
-    renderScoreRanks(rows, elLSList, elLSMeta, 'low',
-        n => `Bottom ${fmtInt(n)} single-game score${n === 1 ? '' : 's'}`, false);
+    renderScoreRanks(rows, elLSList, elLSMeta, 'No low scores yet.',
+        n => t(
+            n === 1 ? 'Bottom {n} single-game score' : 'Bottom {n} single-game scores',
+            { n: fmtInt(n) }
+        ), false);
 }
 
 function renderDealerImpact(di) {
     if (!di.length) {
-        elDIMeta.textContent = "No dealer data yet.";
+        elDIMeta.textContent = t("No dealer data yet.");
         elDIList.innerHTML = "";
         return;
     }
-    elDIMeta.textContent = `Dealer stats for ${fmtInt(di.length)} player${di.length === 1 ? '' : 's'}`;
+    elDIMeta.textContent = t(
+        di.length === 1 ? 'Dealer stats for {count} player' : 'Dealer stats for {count} players',
+        { count: fmtInt(di.length) }
+    );
     elDIList.innerHTML = di.map(d => {
         const deltaSign = d.delta > 0 ? "+" : d.delta < 0 ? "−" : "";
         const deltaClass = d.delta > 0 ? "delta-pos" : d.delta < 0 ? "delta-neg" : "delta-neutral";
@@ -196,12 +208,12 @@ function renderDealerImpact(di) {
                     <div class="di-row-delta ${deltaClass}">${deltaSign}${fmtPercent(Math.abs(d.delta))}</div>
                 </div>
                 <div class="di-row-meta">
-                    <span>${fmtInt(d.games_dealt)} dealt</span>
-                    <span>${fmtInt(d.wins_as_dealer)} wins as dealer</span>
-                    <span>${fmtPercent(d.win_rate_as_dealer)} as dealer</span>
-                    <span>${fmtPercent(d.overall_win_rate)} overall</span>
+                    <span>${esc(t('{n} dealt', { n: fmtInt(d.games_dealt) }))}</span>
+                    <span>${esc(t('{n} wins as dealer', { n: fmtInt(d.wins_as_dealer) }))}</span>
+                    <span>${esc(t('{pct} as dealer', { pct: fmtPercent(d.win_rate_as_dealer) }))}</span>
+                    <span>${esc(t('{pct} overall', { pct: fmtPercent(d.overall_win_rate) }))}</span>
                 </div>
-                ${topWinners ? `<div class="di-row-winners">Wins when dealing: ${topWinners}</div>` : ''}
+                ${topWinners ? `<div class="di-row-winners">${esc(t('Wins when dealing: {list}', { list: topWinners }))}</div>` : ''}
             </div>
         `;
     }).join("");
@@ -209,7 +221,7 @@ function renderDealerImpact(di) {
 
 // --- charts ---
 async function loadWinsChart() {
-    elWinsChartMeta.textContent = "Loading…";
+    elWinsChartMeta.textContent = t("Loading…");
     const sessionId = getSelectedSessionId();
     if (!sessionId) {
         elWinsChartMeta.textContent = "";
@@ -221,12 +233,12 @@ async function loadWinsChart() {
     const { dates, series } = await api(url);
 
     if (!dates.length) {
-        elWinsChartMeta.textContent = `No wins recorded since ${WINS_SINCE}.`;
+        elWinsChartMeta.textContent = t('No wins recorded since {since}.', { since: WINS_SINCE });
         if (winsChart) { winsChart.destroy(); winsChart = null; }
         return;
     }
 
-    elWinsChartMeta.textContent = `Cumulative wins since ${WINS_SINCE} (rule change: ${RULE_CHANGE_DATE})`;
+    elWinsChartMeta.textContent = t('Cumulative wins since {since} (rule change: {rule})', { since: WINS_SINCE, rule: RULE_CHANGE_DATE });
 
     const datasets = series.map((s, i) => ({
         label: s.player_name,
@@ -262,7 +274,7 @@ async function loadWinsChart() {
             ctx.font = '11px Inter, system-ui, sans-serif';
             ctx.fillStyle = '#6b7280';
             ctx.textAlign = 'center';
-            ctx.fillText('Deck change', x, top - 4);
+            ctx.fillText(t('Deck change'), x, top - 4);
             ctx.restore();
         }
     };
@@ -292,7 +304,7 @@ async function loadWinsChart() {
                     y: {
                         beginAtZero: true,
                         ticks: { stepSize: 1, precision: 0 },
-                        title: { display: true, text: 'Total wins' }
+                        title: { display: true, text: t('Total wins') }
                     }
                 }
             }
@@ -302,19 +314,21 @@ async function loadWinsChart() {
 
 function renderSpgChart() {
     const src = spgMode === 'round' ? cachedSpr : cachedSpg;
-    const label = spgMode === 'round' ? 'round' : 'game';
 
-    elSpgTitle.textContent = `Score per ${label}`;
+    elSpgTitle.textContent = spgMode === 'round' ? t('Score per round') : t('Score per game');
     elSpgModeGame.classList.toggle('active', spgMode === 'game');
     elSpgModeRound.classList.toggle('active', spgMode === 'round');
 
     if (!src || !src.labels.length) {
-        elSpgMeta.textContent = `No ${label} data yet.`;
+        elSpgMeta.textContent = spgMode === 'round' ? t('No round data yet.') : t('No game data yet.');
         if (spgChart) { spgChart.destroy(); spgChart = null; }
         return;
     }
 
-    elSpgMeta.textContent = `${fmtInt(src.labels.length)} ${label}s`;
+    elSpgMeta.textContent = t(
+        spgMode === 'round' ? '{n} rounds' : '{n} games',
+        { n: fmtInt(src.labels.length) }
+    );
 
     const datasets = [];
     src.series.forEach((s, i) => {
@@ -345,7 +359,7 @@ function renderSpgChart() {
                 const trendData = s.data.map((_, x) => Math.round(intercept + slope * x));
 
                 datasets.push({
-                    label: `${s.player_name} trend`,
+                    label: t('{name} trend', { name: s.player_name }),
                     data: trendData,
                     borderColor: color,
                     borderWidth: 1.25,
@@ -375,7 +389,7 @@ function renderSpgChart() {
                 },
                 scales: {
                     x: { ticks: { maxTicksLimit: 12 } },
-                    y: { title: { display: true, text: 'Score' } }
+                    y: { title: { display: true, text: t('Score') } }
                 }
             }
         });
@@ -395,19 +409,19 @@ elSpgModeRound.addEventListener('click', () => {
 
 function renderGprChart(gpr) {
     if (!gpr.labels.length) {
-        elGprMeta.textContent = "No round data yet.";
+        elGprMeta.textContent = t("No round data yet.");
         if (gprChart) { gprChart.destroy(); gprChart = null; }
         return;
     }
 
-    elGprMeta.textContent = `${fmtInt(gpr.labels.length)} rounds`;
+    elGprMeta.textContent = t('{n} rounds', { n: fmtInt(gpr.labels.length) });
 
     const gprAvg = gpr.data.reduce((a, b) => a + b, 0) / gpr.data.length;
 
     const gprData = {
         labels: gpr.labels,
         datasets: [{
-            label: 'Games',
+            label: t('Games'),
             data: gpr.data,
             borderColor: CHART_COLORS[0],
             backgroundColor: CHART_COLORS[0],
@@ -416,7 +430,7 @@ function renderGprChart(gpr) {
             pointHitRadius: 10,
             tension: 0.2
         }, {
-            label: `Avg (${Math.round(gprAvg * 10) / 10})`,
+            label: t('Avg ({value})', { value: Math.round(gprAvg * 10) / 10 }),
             data: gpr.data.map(() => gprAvg),
             borderColor: '#9ca3af',
             borderWidth: 1.25,
@@ -442,7 +456,7 @@ function renderGprChart(gpr) {
                     y: {
                         beginAtZero: true,
                         ticks: { stepSize: 1, precision: 0 },
-                        title: { display: true, text: 'Games' }
+                        title: { display: true, text: t('Games') }
                     }
                 }
             }
@@ -452,12 +466,12 @@ function renderGprChart(gpr) {
 
 function renderCumChart(spg) {
     if (!spg.labels.length) {
-        elCumMeta.textContent = "No game data yet.";
+        elCumMeta.textContent = t("No game data yet.");
         if (cumChart) { cumChart.destroy(); cumChart = null; }
         return;
     }
 
-    elCumMeta.textContent = `${fmtInt(spg.labels.length)} games`;
+    elCumMeta.textContent = t('{n} games', { n: fmtInt(spg.labels.length) });
 
     const cumDatasets = spg.series.map((s, i) => {
         let running = 0;
@@ -496,7 +510,7 @@ function renderCumChart(spg) {
                     x: { ticks: { maxTicksLimit: 12 } },
                     y: {
                         beginAtZero: true,
-                        title: { display: true, text: 'Cumulative points' }
+                        title: { display: true, text: t('Cumulative points') }
                     }
                 }
             }
@@ -505,9 +519,9 @@ function renderCumChart(spg) {
 }
 
 async function loadCharts() {
-    elGprMeta.textContent = "Loading…";
-    elSpgMeta.textContent = "Loading…";
-    elCumMeta.textContent = "Loading…";
+    elGprMeta.textContent = t("Loading…");
+    elSpgMeta.textContent = t("Loading…");
+    elCumMeta.textContent = t("Loading…");
 
     const sessionId = getSelectedSessionId();
     if (!sessionId) {

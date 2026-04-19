@@ -27,9 +27,10 @@ $dealerPid = array_key_exists('dealer_player_id', $input) && $input['dealer_play
 
 // Load game -> round -> session, and which players belong to session
 $gameStmt = $pdo->prepare("
-  SELECT g.id AS game_id, g.round_id, r.session_id, r.ended_at
+  SELECT g.id AS game_id, g.round_id, r.session_id, r.ended_at, s.game_type
   FROM games g
   JOIN rounds r ON r.id = g.round_id
+  JOIN sessions s ON s.id = r.session_id
   WHERE g.id = ?
 ");
 $gameStmt->execute([$gameId]);
@@ -38,6 +39,7 @@ if (!$g) json_out(['error' => t('Game not found.')], 404);
 
 $roundId = (int)$g['round_id'];
 $sessionId = (int)$g['session_id'];
+$gameType = (string)($g['game_type'] ?? 'canasta');
 $roundEndedAt = $g['ended_at']; // null or timestamp
 
 // Session players list
@@ -113,16 +115,17 @@ try {
     $maxStmt->execute([$roundId]);
     $maxTotal = (int)($maxStmt->fetchColumn() ?? 0);
 
-    if ($maxTotal >= $target) {
+    $reached = $gameType === 'romme' ? $maxTotal > $target : $maxTotal >= $target;
+    if ($reached) {
         // ensure ended + recompute winner
-        $newRoundWinner = recomputeRoundWinner($pdo, $roundId);
+        $newRoundWinner = recomputeRoundWinner($pdo, $roundId, $gameType);
         $pdo->prepare("UPDATE rounds
                  SET ended_at = COALESCE(ended_at, NOW()),
                      winner_player_id = ?
                  WHERE id=?")
             ->execute([$newRoundWinner, $roundId]);
     } else {
-        // un-end round if edits brought it below target
+        // un-end round if edits brought it back below trigger
         $pdo->prepare("UPDATE rounds SET ended_at=NULL, winner_player_id=NULL WHERE id=?")
             ->execute([$roundId]);
     }

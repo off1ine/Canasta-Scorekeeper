@@ -2,14 +2,17 @@
 declare(strict_types=1);
 
 /**
- * Determine the round winner (highest total, or null on tie/no data).
+ * Determine the round winner.
+ * - Canasta: player with the highest total (ties -> null).
+ * - Rommé:   player with the lowest total (ties -> null).
  */
-function recomputeRoundWinner(PDO $pdo, int $roundId): ?int {
+function recomputeRoundWinner(PDO $pdo, int $roundId, string $gameType = 'canasta'): ?int {
+    $order = $gameType === 'romme' ? 'ASC' : 'DESC';
     $stmt = $pdo->prepare("
         SELECT player_id, round_total
         FROM v_round_totals
         WHERE round_id=?
-        ORDER BY round_total DESC
+        ORDER BY round_total {$order}
     ");
     $stmt->execute([$roundId]);
     $rows = $stmt->fetchAll();
@@ -30,8 +33,11 @@ function roundMaxTotal(PDO $pdo, int $roundId): int {
 }
 
 /**
- * Check whether any player has reached the target score in a round.
+ * Check whether the round has hit its end-of-round trigger.
+ * - Canasta: any player total >= target.
+ * - Rommé:   any player total >  target (first to exceed the ceiling).
  */
-function roundHasReachedTarget(PDO $pdo, int $roundId, int $target): bool {
-    return roundMaxTotal($pdo, $roundId) >= $target;
+function roundHasReachedTarget(PDO $pdo, int $roundId, int $target, string $gameType = 'canasta'): bool {
+    $max = roundMaxTotal($pdo, $roundId);
+    return $gameType === 'romme' ? $max > $target : $max >= $target;
 }

@@ -20,6 +20,11 @@ if ($sessionId <= 0 || !is_array($scoresIn) || count($scoresIn) < 2) {
   json_out(['error' => t('Invalid input.')], 400);
 }
 
+// session game type
+$gtStmt = $pdo->prepare("SELECT game_type FROM sessions WHERE id=?");
+$gtStmt->execute([$sessionId]);
+$gameType = (string)($gtStmt->fetchColumn() ?: 'canasta');
+
 // active round only
 $roundStmt = $pdo->prepare("
   SELECT * FROM rounds
@@ -120,10 +125,10 @@ try {
         ->execute([$gameId, $winnerPid]);
   }
 
-  // Auto-end round if target reached (no auto new round)
+  // Auto-end round if trigger reached (no auto new round)
   $endedNow = false;
-  if (roundHasReachedTarget($pdo, $roundId, $target)) {
-    $newWinner = recomputeRoundWinner($pdo, $roundId);
+  if (roundHasReachedTarget($pdo, $roundId, $target, $gameType)) {
+    $newWinner = recomputeRoundWinner($pdo, $roundId, $gameType);
     $pdo->prepare("UPDATE rounds SET ended_at=COALESCE(ended_at, NOW()), winner_player_id=? WHERE id=?")
         ->execute([$newWinner, $roundId]);
     $endedNow = true;

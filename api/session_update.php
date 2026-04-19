@@ -65,8 +65,10 @@ try {
       $pdo->prepare("UPDATE rounds SET target_score=? WHERE id=?")->execute([$newMax, $roundId]);
 
       // if new target already reached -> end it now
-      if (roundMaxTotal($pdo, $roundId) >= $newMax) {
-        $winnerPid = recomputeRoundWinner($pdo, $roundId);
+      $maxTotal = roundMaxTotal($pdo, $roundId);
+      $reached = $curGameType === 'romme' ? $maxTotal > $newMax : $maxTotal >= $newMax;
+      if ($reached) {
+        $winnerPid = recomputeRoundWinner($pdo, $roundId, (string)$curGameType);
         $pdo->prepare("UPDATE rounds SET ended_at=COALESCE(ended_at, NOW()), winner_player_id=? WHERE id=?")
             ->execute([$winnerPid, $roundId]);
       }
@@ -83,9 +85,10 @@ try {
     foreach ($rounds->fetchAll() as $rr) {
       $rid = (int)$rr['id'];
       $maxTotal = roundMaxTotal($pdo, $rid);
+      $reached = $curGameType === 'romme' ? $maxTotal > $newMax : $maxTotal >= $newMax;
 
-      if ($maxTotal >= $newMax) {
-        $winnerPid = recomputeRoundWinner($pdo, $rid);
+      if ($reached) {
+        $winnerPid = recomputeRoundWinner($pdo, $rid, (string)$curGameType);
         $pdo->prepare("UPDATE rounds SET ended_at=COALESCE(ended_at, NOW()), winner_player_id=? WHERE id=?")
             ->execute([$winnerPid, $rid]);
       } else {

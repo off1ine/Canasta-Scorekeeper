@@ -79,9 +79,12 @@ function suggestNextDealer(d) {
 
 function computeLeaders(d) {
     const totals = d.players.map(p => ({ pid: Number(p.id), total: d.totals[Number(p.id)] ?? 0 }));
-    const max = Math.max(0, ...totals.map(t => t.total));
-    if (max === 0) return new Set();
-    return new Set(totals.filter(t => t.total === max).map(t => t.pid));
+    if (!totals.length || totals.every(t => t.total === 0)) return new Set();
+    const isRomme = d.session?.game_type === 'romme';
+    const best = isRomme
+        ? Math.min(...totals.map(t => t.total))
+        : Math.max(...totals.map(t => t.total));
+    return new Set(totals.filter(t => t.total === best).map(t => t.pid));
 }
 
 let elSession, elRound, elWinner, elMeta, elRoundTitle, elScoreboard, elAddGameInputs;
@@ -110,8 +113,10 @@ function renderScoreboard(d, ended, roundWinner) {
         if (isLeader) chips.push(`<span class="chip chip-indigo">${esc(t('Leader'))}</span>`);
         if (roundWinner === pid) chips.push(`<span class="chip chip-amber">${esc(t('Round winner'))}</span>`);
 
+        const isRomme = d.session?.game_type === 'romme';
+        const meldChipCls = isRomme ? 'chip chip-green' : meldChipClass(meldMin, d.meld_thresholds);
         const meldChip = (meldMin !== null && meldMin !== undefined)
-            ? `<span class="${meldChipClass(meldMin, d.meld_thresholds)}">${esc(t('Min meld {n}', { n: meldMin }))}</span>`
+            ? `<span class="${meldChipCls}">${esc(t('Min meld {n}', { n: meldMin }))}</span>`
             : '';
 
         const row = document.createElement("div");

@@ -124,10 +124,17 @@ function meldMinimumForScore(array $thresholds, int $score): ?int {
 }
 
 $meldMin = [];
-foreach ($players as $p) {
-  $pid = (int)$p['id'];
-  $score = $totals[$pid] ?? 0;
-  $meldMin[$pid] = meldMinimumForScore($meld, $score);
+if (($session['game_type'] ?? 'canasta') === 'romme') {
+  $rommeMin = $session['meld_minimum'] !== null ? (int)$session['meld_minimum'] : null;
+  foreach ($players as $p) {
+    $meldMin[(int)$p['id']] = $rommeMin;
+  }
+} else {
+  foreach ($players as $p) {
+    $pid = (int)$p['id'];
+    $score = $totals[$pid] ?? 0;
+    $meldMin[$pid] = meldMinimumForScore($meld, $score);
+  }
 }
 
 json_out([

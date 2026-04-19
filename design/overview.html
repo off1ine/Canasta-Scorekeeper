@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Scorekeeper - Canasta Ledger</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tabular-nums { font-variant-numeric: tabular-nums; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#58579b",
+                        "secondary-fixed": "#e2dfff",
+                        "inverse-surface": "#2d3133",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#f7f9fb",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "on-secondary-fixed": "#140f54",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "on-surface": "#191c1e",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-secondary-fixed-variant": "#413f82",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#464555",
+                        "primary-container": "#4f46e5",
+                        "primary-fixed": "#e2dfff",
+                        "surface-container": "#eceef0",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "on-primary-fixed": "#0f0069",
+                        "surface-bright": "#f7f9fb",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-primary-container": "#dad7ff",
+                        "inverse-primary": "#c3c0ff",
+                        "tertiary-container": "#a44100",
+                        "on-background": "#191c1e",
+                        "background": "#f7f9fb",
+                        "surface-variant": "#e0e3e5",
+                        "on-secondary-container": "#454386",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "primary": "#3525cd",
+                        "tertiary": "#7e3000",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-container-high": "#e6e8ea",
+                        "outline-variant": "#c7c4d8",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#351000",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#4d44e3",
+                        "surface-dim": "#d8dadc",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#c3c0ff",
+                        "outline": "#777587",
+                        "secondary-container": "#b6b4ff",
+                        "inverse-on-surface": "#eff1f3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen pb-40">
+<!-- TopAppBar -->
+<nav class="bg-[#f7f9fb] dark:bg-slate-950 docked full-width top-0 sticky z-40">
+<div class="flex justify-between items-center px-6 h-16 w-full max-w-screen-xl mx-auto">
+<span class="text-xl font-semibold uppercase tracking-wider text-[#191c1e] dark:text-slate-100 font-['Inter']">Scorekeeper</span>
+</div>
+</nav>
+<main class="px-4 max-w-lg mx-auto pt-2 pb-6 space-y-4">
+<!-- Section 1: Session & Round Header -->
+<section class="bg-surface-container-lowest rounded-lg shadow-[0_12px_40px_rgba(25,28,30,0.06)] relative overflow-hidden p-4">
+<div class="flex justify-between items-start mb-6">
+<div class="space-y-4">
+<div class="space-y-1">
+<span class="text-[10px] font-bold tracking-widest text-outline uppercase font-label">SESSION</span>
+<div class="flex items-center gap-2">
+<span class="bg-surface-container text-on-surface px-3 py-1 rounded-full text-xs font-medium">Friday Night — Target 5,000</span>
+</div>
+</div>
+<div class="space-y-1">
+<span class="text-[10px] font-bold tracking-widest text-outline uppercase font-label">ROUND</span>
+<div class="flex items-center gap-2">
+<span class="bg-primary text-on-primary px-3 py-1 rounded-full text-xs font-medium">Round 3</span>
+</div>
+</div>
+</div>
+<button class="text-primary font-semibold text-sm hover:underline transition-all active:scale-95">
+                    Start new round
+                </button>
+</div>
+<p class="text-on-surface-variant text-xs font-medium opacity-80">
+                Started 8:42 PM · 12 games played
+            </p>
+</section>
+<!-- Section 2: Scoreboard -->
+<section class="space-y-4">
+<h2 class="text-[10px] font-bold tracking-widest text-outline uppercase px-2">LIVE SCOREBOARD</h2>
+<div class="bg-surface-container-low rounded-lg overflow-hidden border border-outline-variant/10">
+<!-- Leader Row (Julian) -->
+<div class="bg-surface-container-lowest p-4 flex flex-col gap-2">
+<div class="flex justify-between items-center mb-1">
+<div class="flex items-center gap-2">
+<span class="font-bold text-on-surface">JULIAN</span>
+<span class="bg-primary/10 text-primary text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-tight">Leader</span>
+</div>
+<span class="text-2xl font-extrabold tabular-nums tracking-tighter text-primary">4,120</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 82.4%"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-[13px] tabular-nums"><span class="text-slate-700 font-medium">4,120</span> <span class="text-slate-400">/ 5,000</span></span>
+<span class="bg-green-100 text-green-700 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">MIN MELD 90</span>
+</div>
+</div>
+<!-- Regular Row (Marcus) -->
+<div class="bg-surface-container-lowest p-4 flex flex-col gap-2 border-t border-outline-variant/5">
+<div class="flex justify-between items-center mb-1">
+<div class="flex items-center gap-2">
+<span class="font-bold text-on-surface">MARCUS</span>
+<span class="text-outline text-[9px] font-bold uppercase border border-outline-variant/30 px-2 py-0.5 rounded-full">Dealer</span>
+</div>
+<span class="text-2xl font-bold tabular-nums tracking-tight text-on-surface">2,840</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-slate-400 h-full rounded-full" style="width: 56.8%"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-[13px] tabular-nums"><span class="text-slate-700 font-medium">2,840</span> <span class="text-slate-400">/ 5,000</span></span>
+<span class="bg-amber-100 text-amber-700 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">MIN MELD 50</span>
+</div>
+</div>
+<!-- Regular Row (Sarah) -->
+<div class="bg-surface-container-lowest p-4 flex flex-col gap-2 border-t border-outline-variant/5">
+<div class="flex justify-between items-center mb-1">
+<div class="flex items-center gap-2">
+<span class="font-bold text-on-surface">SARAH</span>
+</div>
+<span class="text-2xl font-bold tabular-nums tracking-tight text-on-surface">1,950</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-slate-400 h-full rounded-full" style="width: 39%"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-[13px] tabular-nums"><span class="text-slate-700 font-medium">1,950</span> <span class="text-slate-400">/ 5,000</span></span>
+<span class="bg-amber-100 text-amber-700 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">MIN MELD 50</span>
+</div>
+</div>
+<!-- Regular Row (Elena) -->
+<div class="bg-surface-container-lowest p-4 flex flex-col gap-2 border-t border-outline-variant/5">
+<div class="flex justify-between items-center mb-1">
+<div class="flex items-center gap-2">
+<span class="font-bold text-on-surface">ELENA</span>
+</div>
+<span class="text-2xl font-bold tabular-nums tracking-tight text-on-surface">1,120</span>
+</div>
+<div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden">
+<div class="bg-slate-400 h-full rounded-full" style="width: 22.4%"></div>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-[13px] tabular-nums"><span class="text-slate-700 font-medium">1,120</span> <span class="text-slate-400">/ 5,000</span></span>
+<span class="bg-red-100 text-red-700 text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">MIN MELD 50</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Add Game Score -->
+<section class="bg-surface-container-lowest rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/10 p-4">
+<h2 class="text-[10px] font-bold tracking-widest text-outline uppercase mb-6">ADD GAME SCORE</h2>
+<div class="space-y-6">
+<!-- Player Row Julian -->
+<div class="space-y-2">
+<label class="text-[12px] font-bold text-outline uppercase tracking-tight ml-1">Julian</label>
+<div class="flex items-center h-[48px] bg-surface-container-low rounded-lg border border-outline-variant/20 overflow-hidden">
+<button class="w-[56px] h-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest active:scale-95 transition-all border-r border-outline-variant/10">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<input class="flex-1 h-full bg-transparent border-0 text-right text-xl font-bold tabular-nums focus:ring-0 px-4" placeholder="0" type="number" value="0"/>
+<button class="w-[56px] h-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest active:scale-95 transition-all border-l border-outline-variant/10">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Player Row Marcus -->
+<div class="space-y-2">
+<label class="text-[12px] font-bold text-outline uppercase tracking-tight ml-1">Marcus</label>
+<div class="flex items-center h-[48px] bg-surface-container-low rounded-lg border border-outline-variant/20 overflow-hidden">
+<button class="w-[56px] h-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest active:scale-95 transition-all border-r border-outline-variant/10">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<input class="flex-1 h-full bg-transparent border-0 text-right text-xl font-bold tabular-nums focus:ring-0 px-4" placeholder="0" type="number" value="0"/>
+<button class="w-[56px] h-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest active:scale-95 transition-all border-l border-outline-variant/10">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Player Row Sarah -->
+<div class="space-y-2">
+<label class="text-[12px] font-bold text-outline uppercase tracking-tight ml-1">Sarah</label>
+<div class="flex items-center h-[48px] bg-surface-container-low rounded-lg border border-outline-variant/20 overflow-hidden">
+<button class="w-[56px] h-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest active:scale-95 transition-all border-r border-outline-variant/10">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<input class="flex-1 h-full bg-transparent border-0 text-right text-xl font-bold tabular-nums focus:ring-0 px-4" placeholder="0" type="number" value="0"/>
+<button class="w-[56px] h-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest active:scale-95 transition-all border-l border-outline-variant/10">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Player Row Elena -->
+<div class="space-y-2">
+<label class="text-[12px] font-bold text-outline uppercase tracking-tight ml-1">Elena</label>
+<div class="flex items-center h-[48px] bg-surface-container-low rounded-lg border border-outline-variant/20 overflow-hidden">
+<button class="w-[56px] h-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest active:scale-95 transition-all border-r border-outline-variant/10">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<input class="flex-1 h-full bg-transparent border-0 text-right text-xl font-bold tabular-nums focus:ring-0 px-4" placeholder="0" type="number" value="0"/>
+<button class="w-[56px] h-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest active:scale-95 transition-all border-l border-outline-variant/10">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+</div>
+<div class="mt-8 space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-[10px] font-bold uppercase text-outline-variant">Winner</span>
+<div class="flex gap-2">
+<button class="bg-primary text-on-primary px-3 py-1.5 rounded-full text-[10px] font-bold uppercase transition-transform active:scale-95">Julian</button>
+<button class="bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-full text-[10px] font-bold uppercase transition-transform active:scale-95">Marcus</button>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-[10px] font-bold uppercase text-outline-variant">Next Dealer</span>
+<div class="flex gap-2">
+<button class="bg-surface-container text-on-surface-variant px-3 py-1.5 rounded-full text-[10px] font-bold uppercase transition-transform active:scale-95">Sarah</button>
+<button class="bg-primary text-on-primary px-3 py-1.5 rounded-full text-[10px] font-bold uppercase transition-transform active:scale-95">Elena</button>
+</div>
+</div>
+<button class="mt-4 w-full bg-primary text-on-primary h-12 rounded-lg font-bold uppercase tracking-widest shadow-md flex items-center justify-center gap-2 transition-transform active:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                    Add Game
+                </button>
+</div>
+</section>
+<!-- Section 4: History -->
+<section class="space-y-4">
+<div class="flex justify-between items-center px-2">
+<h2 class="text-[10px] font-bold tracking-widest text-outline uppercase">GAME HISTORY</h2>
+<button class="text-primary text-[10px] font-bold uppercase tracking-wider">View All</button>
+</div>
+<div class="space-y-2">
+<div class="bg-surface-container-lowest p-4 rounded-lg flex items-center justify-between border border-outline-variant/10">
+<div class="flex items-center gap-4">
+<span class="text-outline font-bold tabular-nums text-xs">#12</span>
+<div>
+<p class="text-sm font-bold">Julian won round</p>
+<p class="text-[10px] text-outline font-medium">8:30 PM · +450 pts</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<span class="text-[10px] font-bold text-outline block uppercase">Score</span>
+<span class="text-sm font-bold tabular-nums">3,240</span>
+</div>
+<span class="material-symbols-outlined text-outline/40" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 shadow-[0_-12px_40px_rgba(25,28,30,0.06)] border-t border-slate-200/20 dark:border-slate-800/20 rounded-t-2xl">
+<div class="flex flex-col items-center justify-center bg-[#f2f4f6] dark:bg-slate-800 text-[#3525cd] dark:text-[#4f46e5] rounded-xl px-4 py-1 transition-transform duration-300 ease-out active:scale-90">
+<span class="material-symbols-outlined" data-icon="grid_view" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-tight">Overview</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#777587] dark:text-slate-500 px-4 py-1 hover:text-[#191c1e] dark:hover:text-slate-200 transition-transform duration-300 ease-out active:scale-90">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-tight">Stats</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#777587] dark:text-slate-500 px-4 py-1 hover:text-[#191c1e] dark:hover:text-slate-200 transition-transform duration-300 ease-out active:scale-90">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-tight">Setup</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#777587] dark:text-slate-500 px-4 py-1 hover:text-[#191c1e] dark:hover:text-slate-200 transition-transform duration-300 ease-out active:scale-90">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-tight">Account</span>
+</div>
+</nav>
+</body></html>
